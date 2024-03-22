@@ -20,12 +20,7 @@ public class TaskManager {
     }
 
     public ArrayList<Task> getAllTasks() {
-        ArrayList<Task> allTasks = new ArrayList<>();
-
-        for (Task task : tasks.values()) {
-            allTasks.add(task);
-        }
-        return allTasks;
+        return new ArrayList<>(tasks.values());
     } // получение списка всех задач
 
     public void removeAllTasks() {
@@ -50,12 +45,7 @@ public class TaskManager {
     } //удаление по идентификатору
 
     public ArrayList<Epic> getAllEpics() {
-        ArrayList<Epic> allEpics = new ArrayList<>();
-
-        for (Epic epic : epics.values()) {
-            allEpics.add(epic);
-        }
-        return allEpics;
+        return new ArrayList<>(epics.values());
     } // получение списка всех эпиков
 
     public void removeAllEpic() {
@@ -105,12 +95,7 @@ public class TaskManager {
     } //получение списка подзадач определенного эпика
 
     public ArrayList<Subtask> getAllSubtask() {
-        ArrayList<Subtask> allSubtask = new ArrayList<>();
-
-        for (Subtask subtask : subtasks.values()) {
-            allSubtask.add(subtask);
-        }
-        return allSubtask;
+        return new ArrayList<>(subtasks.values());
     } // получение списка всех подзадач
 
     public void removeAllSubtask() {
