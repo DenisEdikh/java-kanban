@@ -85,13 +85,14 @@ public class TaskManager {
         }
     } // удаление эпика по идентификатору
 
-    public ArrayList<Subtask> listOfSubtask(Epic epic) {
-        ArrayList<Subtask> listOfSubtask = new ArrayList<>();
-
-        for (Integer i : epic.getListOfSubtask()) {
-            listOfSubtask.add(subtasks.get(i));
+    public ArrayList<Subtask> getEpicSubtasks(int epicId) {
+        ArrayList<Subtask> epicSubtask = new ArrayList<>();
+        if (epics.containsKey(epicId)) {
+            for (Integer i : epics.get(epicId).getSubtaskIdS()) {
+                epicSubtask.add(subtasks.get(i));
+            }
         }
-        return listOfSubtask;
+        return epicSubtask;
     } //получение списка подзадач определенного эпика
 
     public ArrayList<Subtask> getAllSubtask() {
