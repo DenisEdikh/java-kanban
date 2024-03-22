@@ -19,13 +19,21 @@ public class Epic extends Task {
         return subtaskIdS;
     }
 
-    public void setListOfSubtask(ArrayList<Integer> listOfSubtask) {
-        this.listOfSubtask = listOfSubtask;
-    }
+    public void addSubtaskId(int id) {
+        subtaskIdS.add(id);
+    } // добавление подзадачи
+
+    public void removeSubtaskId(int id) {
+        subtaskIdS.remove(Integer.valueOf(id));
+    } // удаление задачи
+
+    public void clearSubtaskIdS() {
+        subtaskIdS.clear();
+    } // удаление всех подзадач
 
     @Override
     public String toString() {
-        return "Epic{" +
+        return "ru.yandex.practicum.javakaban.model.Epic{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
