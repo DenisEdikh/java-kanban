@@ -1,8 +1,8 @@
-import ru.yandex.practicum.javakaban.manager.TaskManager;
-import ru.yandex.practicum.javakaban.model.Epic;
-import ru.yandex.practicum.javakaban.model.Status;
-import ru.yandex.practicum.javakaban.model.Subtask;
-import ru.yandex.practicum.javakaban.model.Task;
+import ru.yandex.practicum.javakanban.manager.TaskManager;
+import ru.yandex.practicum.javakanban.model.Epic;
+import ru.yandex.practicum.javakanban.model.Status;
+import ru.yandex.practicum.javakanban.model.Subtask;
+import ru.yandex.practicum.javakanban.model.Task;
 
 public class Main {
 

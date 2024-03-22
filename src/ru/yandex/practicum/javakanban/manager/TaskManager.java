@@ -1,8 +1,8 @@
-package ru.yandex.practicum.javakaban.manager;
-import ru.yandex.practicum.javakaban.model.Epic;
-import ru.yandex.practicum.javakaban.model.Status;
-import ru.yandex.practicum.javakaban.model.Subtask;
-import ru.yandex.practicum.javakaban.model.Task;
+package ru.yandex.practicum.javakanban.manager;
+import ru.yandex.practicum.javakanban.model.Epic;
+import ru.yandex.practicum.javakanban.model.Status;
+import ru.yandex.practicum.javakanban.model.Subtask;
+import ru.yandex.practicum.javakanban.model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;

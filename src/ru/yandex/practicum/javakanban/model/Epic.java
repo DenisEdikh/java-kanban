@@ -1,4 +1,4 @@
-package ru.yandex.practicum.javakaban.model;
+package ru.yandex.practicum.javakanban.model;
 
 import java.util.ArrayList;
 
