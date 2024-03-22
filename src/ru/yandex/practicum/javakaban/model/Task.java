@@ -13,11 +13,11 @@ public class Task {
     } // конструктор создания новой задачи
 
 
-    public Task(String title, String description, String status, int id) {
+    public Task(String title, String description, Status status, int id) {
         this.title = title;
         this.description = description;
         this.id = id;
-        this.status = Status.valueOf(status);
+        this.status = status;
     } // конструктор для обновления задачи/подзадачи по верному id
 
     public Task(String title, String description, int id) {
