@@ -26,6 +26,18 @@ public class Task {
         this.id = id;
     } // конструктор для обновления эпиков
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getTitle() {
         return title;
     }
