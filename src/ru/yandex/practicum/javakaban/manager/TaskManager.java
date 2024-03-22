@@ -139,26 +139,27 @@ public class TaskManager {
         }
     } // удаление подзадачи по идентификатору
 
-    public void refreshStatusOfEpic(int id) {
-        if (epics.get(id).getListOfSubtask().isEmpty()) {
-            epics.get(id).setStatus(Status.NEW);
+    private void updateStatusOfEpic(int id) {
+        Epic tempEpic = epics.get(id);
+        if (tempEpic.getSubtaskIdS().isEmpty()) {
+            tempEpic.setStatus(Status.NEW);
         } else {
-            int counterNew =0;
-            int counterDone =0;
+            int counterNew = 0;
+            int counterDone = 0;
 
-            for (Integer i : epics.get(id).getListOfSubtask()) {
+            for (Integer i : epics.get(id).getSubtaskIdS()) {
                 if (subtasks.get(i).getStatus().equals(Status.NEW)) {
                     counterNew++;
                 } else if (subtasks.get(i).getStatus().equals(Status.DONE)) {
                     counterDone++;
                 }
             }
-            if (counterNew == epics.get(id).getListOfSubtask().size()) {
-                epics.get(id).setStatus(Status.NEW);
-            } else if (counterDone == epics.get(id).getListOfSubtask().size()) {
-                epics.get(id).setStatus(Status.DONE);
+            if (counterNew == epics.get(id).getSubtaskIdS().size()) {
+                tempEpic.setStatus(Status.NEW);
+            } else if (counterDone == epics.get(id).getSubtaskIdS().size()) {
+                tempEpic.setStatus(Status.DONE);
             } else {
-                epics.get(id).setStatus(Status.IN_PROGRESS);
+                tempEpic.setStatus(Status.IN_PROGRESS);
             }
         }
     } // обновление статуса эпика
