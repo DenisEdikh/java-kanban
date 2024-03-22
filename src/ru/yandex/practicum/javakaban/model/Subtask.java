@@ -1,27 +1,16 @@
 package ru.yandex.practicum.javakaban.model;
 
 public class Subtask extends Task {
-    protected String epic;
     protected int epicId;
 
-    public Subtask(String title, String epic, String description) {
+    public Subtask(String title, String description, int epicId) {
         super(title, description);
-        this.epic = epic;
-        this.status = Status.NEW;
-    } //конструктор по созданию подзадачи
+        this.epicId = epicId;
+    }
 
-    public Subtask(String title, String epic, String description, String status, int id) {
+    public Subtask(String title, String description, Status status, int id) {
         super(title, description, status, id);
-        this.epic = epic;
-    } // конструктор по обновлению подзадачи
-
-    public String getEpic() {
-        return epic;
-    }
-
-    public void setEpic(String epic) {
-        this.epic = epic;
-    }
+       } // конструктор по обновлению подзадачи
 
     public int getEpicId() {
         return epicId;
@@ -39,7 +28,6 @@ public class Subtask extends Task {
                 ", description='" + description + '\'' +
                 ", status=" + status +
                 ", epicId=" + epicId +
-                ", epic='" + epic + '\'' +
                 '}';
     }
 }
