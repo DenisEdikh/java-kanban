@@ -16,10 +16,6 @@ public class Subtask extends Task {
         return epicId;
     }
 
-    public void setEpicId(int epicId) {
-        this.epicId = epicId;
-    }
-
     @Override
     public String toString() {
         return "ru.yandex.practicum.javakaban.model.Subtask{" +
