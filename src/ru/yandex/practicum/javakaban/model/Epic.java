@@ -3,20 +3,20 @@ package ru.yandex.practicum.javakaban.model;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    protected ArrayList<Integer> listOfSubtask;
+    protected ArrayList<Integer> subtaskIdS;
 
     public Epic(String title, String description) {
         super(title, description);
-        this.listOfSubtask = new ArrayList<>();
+        this.subtaskIdS = new ArrayList<>();
     } // конструктор создания эпиков
 
     public Epic(String title, String description, int id) {
         super(title, description, id);
-        this.listOfSubtask = new ArrayList<>();
+        this.subtaskIdS = new ArrayList<>();
     } // конструктор обновления эпиков
 
-    public ArrayList<Integer> getListOfSubtask() {
-        return listOfSubtask;
+    public ArrayList<Integer> getSubtaskIdS() {
+        return subtaskIdS;
     }
 
     public void setListOfSubtask(ArrayList<Integer> listOfSubtask) {
@@ -30,7 +30,7 @@ public class Epic extends Task {
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
-                ", listOfSubtask=" + listOfSubtask +
+                ", listOfSubtask=" + subtaskIdS +
                 '}';
     }
 }
