@@ -37,12 +37,16 @@ public class TaskManager {
         return counterId;
     } // добавление новой задачи
 
-    public void refreshOfTask(Task task) {
-        tasks.put(task.getId(), task);
+    public void updateTask(Task task) {
+        if (tasks.containsKey(task.getId())) {
+            tasks.put(task.getId(), task);
+        }
     } //обновление задачи
 
     public void removeTaskById(int id) {
-        tasks.remove(id);
+        if (tasks.containsKey(id)) {
+            tasks.remove(id);
+        }
     } //удаление по идентификатору
 
     public ArrayList<Epic> getAllEpics() {
@@ -64,27 +68,21 @@ public class TaskManager {
         return counterId;
     } //добавление нового эпика
 
-    public void refreshOfEpic(Epic epic) {
-        String tempTitle = epics.get(epic.getId()).getTitle(); // временное сохр. титула сущ. эпика
-        Status tempStatus = epics.get(epic.getId()).getStatus(); // временное сохр. статуса сущ. эпика
-        ArrayList<Integer> tempList = epics.get(epic.getId()).getListOfSubtask(); // временное сохр. подзадач сущ. эпика
-
-        epics.put(epic.getId(), epic); // обновление эпика
-        epics.get(epic.getId()).setStatus(tempStatus); // т.к. при обновлении эпика статус остается тем же
-        epics.get(epic.getId()).setListOfSubtask(tempList); // даем информацию о связанных подзадачах
-        // проверка на изменение имени эпика (тогда необходимо поменять у всех подзадач)
-        if (!epic.getTitle().equals(tempTitle)) {
-            for (Integer tempId : epics.get(epic.getId()).getListOfSubtask()) {
-                subtasks.get(tempId).setEpic(epic.getTitle());
-            }
+    public void updateEpic(Epic epic) {
+        if (epics.containsKey(epic.getId())) {
+            final Epic savedEpic = epics.get(epic.getId());
+            savedEpic.setTitle(epic.getTitle());
+            savedEpic.setDescription(epic.getDescription());
         }
     } // обновление эпика
 
     public void removeEpicById(int id) {
-        for (Integer i : epics.get(id).getListOfSubtask()) {
-            subtasks.remove(i);
+        if (epics.containsKey(id)) {
+            for (Integer i : epics.get(id).getSubtaskIdS()) {
+                subtasks.remove(i);
+            }
+            epics.remove(id);
         }
-        epics.remove(id);
     } // удаление эпика по идентификатору
 
     public ArrayList<Subtask> listOfSubtask(Epic epic) {
@@ -122,22 +120,23 @@ public class TaskManager {
         return -1;
     } //добавление подзадачи
 
-    public void refreshOfSubTask(Subtask subtask) {
-        int tempEpicId = subtasks.get(subtask.getId()).getEpicId();
-
-        subtask.setEpicId(tempEpicId); // добавл. в обновленную подзадачу id эпика, кот-ый был в обновляемой подзадаче
-        subtasks.put(subtask.getId(), subtask);
-        refreshStatusOfEpic(tempEpicId); // обновление статуса эпика
+    public void updateSubTask(Subtask subtask) {
+        if (subtasks.containsKey(subtask.getId())) {
+            final Subtask savedSubtask = subtasks.get(subtask.getId());
+            savedSubtask.setTitle(subtask.getTitle());
+            savedSubtask.setDescription(subtask.getDescription());
+            savedSubtask.setStatus(subtask.getStatus());
+            updateStatusOfEpic(savedSubtask.getEpicId());
+        }
     } //обновление подзадачи
-    public void removeSubtaskById(int id) {
-        //получение индекса передаваемого id, хранящегося в эпике
-        int tempIndex = epics.get(subtasks.get(id).getEpicId()).getListOfSubtask().indexOf(id);
-        int tempEpicId = subtasks.get(id).getEpicId();
 
-        //удаление id подзадачи, хранящегося в эпике
-        epics.get(subtasks.get(id).getEpicId()).getListOfSubtask().remove(tempIndex);
-        subtasks.remove(id);
-        refreshStatusOfEpic(tempEpicId);
+    public void removeSubtaskById(int id) {
+        if (subtasks.containsKey(id)) {
+            int tempSubtaskIdS = subtasks.get(id).getEpicId();
+            epics.get(tempSubtaskIdS).removeSubtaskId(id);
+            subtasks.remove(id);
+            updateStatusOfEpic(tempSubtaskIdS);
+        }
     } // удаление подзадачи по идентификатору
 
     public void refreshStatusOfEpic(int id) {
