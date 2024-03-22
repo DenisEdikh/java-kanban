@@ -1,3 +1,9 @@
+import ru.yandex.practicum.javakaban.manager.TaskManager;
+import ru.yandex.practicum.javakaban.model.Epic;
+import ru.yandex.practicum.javakaban.model.Status;
+import ru.yandex.practicum.javakaban.model.Subtask;
+import ru.yandex.practicum.javakaban.model.Task;
+
 public class Main {
 
     public static void main(String[] args) {

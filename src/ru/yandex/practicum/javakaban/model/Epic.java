@@ -1,3 +1,5 @@
+package ru.yandex.practicum.javakaban.model;
+
 import java.util.ArrayList;
 
 public class Epic extends Task {

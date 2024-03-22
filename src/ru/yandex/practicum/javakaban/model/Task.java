@@ -1,4 +1,4 @@
-import java.util.Objects;
+package ru.yandex.practicum.javakaban.model;
 
 public class Task {
     protected String title;
@@ -48,7 +48,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "ru.yandex.practicum.javakaban.model.Task{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +

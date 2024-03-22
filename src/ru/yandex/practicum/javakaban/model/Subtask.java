@@ -1,3 +1,5 @@
+package ru.yandex.practicum.javakaban.model;
+
 public class Subtask extends Task {
     protected String epic;
     protected int epicId;
@@ -31,7 +33,7 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return "Subtask{" +
+        return "ru.yandex.practicum.javakaban.model.Subtask{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
