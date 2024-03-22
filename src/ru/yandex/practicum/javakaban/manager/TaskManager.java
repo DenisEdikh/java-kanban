@@ -31,9 +31,10 @@ public class TaskManager {
         return tasks.get(id);
     } // получение задачи по идентификатору
 
-    public void addNewTask(Task task) {
-        task.setId(++taskId);
-        tasks.put(taskId, task);
+    public int addNewTask(Task task) {
+        task.setId(++counterId);
+        tasks.put(counterId, task);
+        return counterId;
     } // добавление новой задачи
 
     public void refreshOfTask(Task task) {
@@ -57,9 +58,10 @@ public class TaskManager {
         return epics.get(id);
     } // получение эпика по идентификатору
 
-    public void addNewEpic(Epic epic) {
-        epic.setId(++taskId);
-        epics.put(taskId, epic);
+    public int addNewEpic(Epic epic) {
+        epic.setId(++counterId);
+        epics.put(counterId, epic);
+        return counterId;
     } //добавление нового эпика
 
     public void refreshOfEpic(Epic epic) {
@@ -109,15 +111,15 @@ public class TaskManager {
         return subtasks.get(id);
     } // получение подзадачи по идентификатору
 
-    public void addNewSubtask(Subtask subtask) {
-        subtask.setId(++taskId); //рассмотреть возможность без цикла, сразу выбрать значение эпика/ вроде не получается
-        for (Epic value : epics.values()) {
-            if (value.getTitle().equals(subtask.getEpic())) {
-                value.getListOfSubtask().add(taskId);
-                subtask.setEpicId(value.getId()); // установка в подзадаче id эпика, в который она добавлена
-            }
+    public int addNewSubtask(Subtask subtask) {
+        if (epics.containsKey(subtask.getEpicId())) {
+            subtask.setId(++counterId);
+            epics.get(subtask.getEpicId()).addSubtaskId(counterId);
+            subtasks.put(counterId, subtask);
+            updateStatusOfEpic(subtask.getEpicId());
+            return counterId;
         }
-        subtasks.put(taskId, subtask);
+        return -1;
     } //добавление подзадачи
 
     public void refreshOfSubTask(Subtask subtask) {
