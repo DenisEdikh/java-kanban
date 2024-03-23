@@ -9,15 +9,9 @@ import java.util.HashMap;
 
 public class TaskManager {
     private int counterId = 0;
-    private HashMap<Integer, Task> tasks;
-    private HashMap<Integer, Epic> epics;
-    private HashMap<Integer, Subtask> subtasks;
-
-    public TaskManager() {
-        this.tasks = new HashMap<>();
-        this.epics = new HashMap<>();
-        this.subtasks = new HashMap<>();
-    }
+    private HashMap<Integer, Task> tasks = new HashMap<>();
+    private HashMap<Integer, Epic> epics = new HashMap<>();
+    private HashMap<Integer, Subtask> subtasks = new HashMap<>();
 
     public ArrayList<Task> getAllTasks() {
         return new ArrayList<>(tasks.values());
