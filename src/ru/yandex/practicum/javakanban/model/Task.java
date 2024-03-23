@@ -60,7 +60,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "ru.yandex.practicum.javakaban.model.Task{" +
+        return "Task{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
