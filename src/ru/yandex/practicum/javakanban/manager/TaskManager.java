@@ -117,21 +117,19 @@ public class TaskManager {
     } //добавление подзадачи
 
     public void updateSubTask(Subtask subtask) {
-        if (subtasks.containsKey(subtask.getId())) {
-            final Subtask savedSubtask = subtasks.get(subtask.getId());
-            savedSubtask.setTitle(subtask.getTitle());
-            savedSubtask.setDescription(subtask.getDescription());
-            savedSubtask.setStatus(subtask.getStatus());
-            updateStatusOfEpic(savedSubtask.getEpicId());
+        if (epics.containsKey(subtask.getEpicId()) &
+                epics.get(subtask.getEpicId()).getSubtaskIdS().contains(subtask.getId())) {
+            subtasks.put(subtask.getId(), subtask);
+            updateStatusOfEpic(subtask.getEpicId());
         }
     } //обновление подзадачи
 
     public void removeSubtaskById(int id) {
         if (subtasks.containsKey(id)) {
-            int tempSubtaskIdS = subtasks.get(id).getEpicId();
-            epics.get(tempSubtaskIdS).removeSubtaskId(id);
+            int tempEpicId = subtasks.get(id).getEpicId();
+            epics.get(tempEpicId).removeSubtaskId(id);
             subtasks.remove(id);
-            updateStatusOfEpic(tempSubtaskIdS);
+            updateStatusOfEpic(tempEpicId);
         }
     } // удаление подзадачи по идентификатору
 
