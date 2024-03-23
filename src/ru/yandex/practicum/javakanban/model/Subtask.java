@@ -8,8 +8,9 @@ public class Subtask extends Task {
         this.epicId = epicId;
     }
 
-    public Subtask(String title, String description, Status status, int id) {
+    public Subtask(String title, String description, Status status, int id, int epicId) {
         super(title, description, status, id);
+        this.epicId = epicId;
        } // конструктор по обновлению подзадачи
 
     public int getEpicId() {
