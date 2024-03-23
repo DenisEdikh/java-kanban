@@ -143,16 +143,16 @@ public class TaskManager {
             int counterNew = 0;
             int counterDone = 0;
 
-            for (Integer i : epics.get(id).getSubtaskIdS()) {
+            for (Integer i : tempEpic.getSubtaskIdS()) {
                 if (subtasks.get(i).getStatus().equals(Status.NEW)) {
                     counterNew++;
                 } else if (subtasks.get(i).getStatus().equals(Status.DONE)) {
                     counterDone++;
                 }
             }
-            if (counterNew == epics.get(id).getSubtaskIdS().size()) {
+            if (counterNew == tempEpic.getSubtaskIdS().size()) {
                 tempEpic.setStatus(Status.NEW);
-            } else if (counterDone == epics.get(id).getSubtaskIdS().size()) {
+            } else if (counterDone == tempEpic.getSubtaskIdS().size()) {
                 tempEpic.setStatus(Status.DONE);
             } else {
                 tempEpic.setStatus(Status.IN_PROGRESS);
