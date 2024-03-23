@@ -41,21 +41,21 @@ public class Main {
         System.out.println("subtasks = " + taskManager.getAllSubtask());
         System.out.println();
 
-        Subtask newsubtask11 = new Subtask("Buy bricks", "Need 50000 pieces of bricks", Status.DONE, s11);
+        Subtask newsubtask11 = new Subtask("Buy bricks", "Need 50000 pieces of bricks", Status.DONE, s11, e2);
         taskManager.updateSubTask(newsubtask11);
 
-        Subtask newsubtask12 = new Subtask("Buy cement", "Need 600 kg", Status.IN_PROGRESS, s12);
+        Subtask newsubtask12 = new Subtask("Buy cement", "Need 600 kg", Status.IN_PROGRESS, s12, e1);
         taskManager.updateSubTask(newsubtask12);
 
-        System.out.println("epics = " + taskManager.getAllEpics());
-        System.out.println("subtasks = " + taskManager.getAllSubtask());
+        System.out.println("epicsAfter = " + taskManager.getAllEpics());
+        System.out.println("subtasksAfter = " + taskManager.getAllSubtask());
         System.out.println();
 
         taskManager.removeEpicById(e2);
         taskManager.removeSubtaskById(s11);
 
-        System.out.println("epics = " + taskManager.getAllEpics());
-        System.out.println("subtasks = " + taskManager.getAllSubtask());
+        System.out.println("epicsRemove = " + taskManager.getAllEpics());
+        System.out.println("subtasksRemove = " + taskManager.getAllSubtask());
         System.out.println();
         
         taskManager.updateEpic(newEpic3);
