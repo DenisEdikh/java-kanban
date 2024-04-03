@@ -3,6 +3,7 @@ package ru.yandex.practicum.javakanban.manager;
 import ru.yandex.practicum.javakanban.model.Task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private final ArrayList<Task> history = new ArrayList<>();
@@ -19,7 +20,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public ArrayList<Task> getHistory() {
+    public List<Task> getHistory() {
         return new ArrayList<>(history);
     }
 }

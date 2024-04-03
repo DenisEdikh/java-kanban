@@ -2,10 +2,10 @@ package ru.yandex.practicum.javakanban.manager;
 
 import ru.yandex.practicum.javakanban.model.Task;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface HistoryManager {
 
     void addTaskToHistory(Task task);
-    ArrayList<Task> getHistory();
+    List<Task> getHistory();
 }

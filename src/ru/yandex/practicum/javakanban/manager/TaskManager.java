@@ -5,6 +5,7 @@ import ru.yandex.practicum.javakanban.model.Subtask;
 import ru.yandex.practicum.javakanban.model.Task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface TaskManager {
     ArrayList<Task> getAllTasks(); // получение списка всех задач
@@ -63,6 +64,6 @@ public interface TaskManager {
 
     void removeSubtaskById(int id); // удаление подзадачи по идентификатору
 
-    ArrayList<Task> getHistory();
+    List<Task> getHistory();
 
 }
