@@ -63,4 +63,6 @@ public interface TaskManager {
 
     void removeSubtaskById(int id); // удаление подзадачи по идентификатору
 
+    ArrayList<Task> getHistory();
+
 }
