@@ -5,19 +5,21 @@ import ru.yandex.practicum.javakanban.model.Task;
 import java.util.ArrayList;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private ArrayList<Task> history = new ArrayList<>();
+    private final ArrayList<Task> history = new ArrayList<>();
     static final int SIZE_OF_HISTORY = 10;
 
     @Override
     public void addTaskToHistory(Task task) {
-        if (history.size() == SIZE_OF_HISTORY) {
-            history.removeFirst();
+        if (task != null) {
+            if (history.size() == SIZE_OF_HISTORY) {
+                history.removeFirst();
+            }
+            history.add(task);
         }
-        history.add(task);
     }
 
     @Override
     public ArrayList<Task> getHistory() {
-        return history;
+        return new ArrayList<>(history);
     }
 }
