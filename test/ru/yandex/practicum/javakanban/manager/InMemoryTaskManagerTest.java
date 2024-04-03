@@ -257,4 +257,17 @@ public class InMemoryTaskManagerTest {
         assertEquals(task.getTitle(), savedTask.getTitle(), "Задача изменилась");
         assertEquals(task.getDescription(), savedTask.getDescription(), "Задача изменилась");
     }
+
+    @Test
+    void shouldReturn2EntriesOfHistory() {
+        final int taskId = taskManager.addNewTask(task);
+        final int taskId1 = taskManager.addNewTask(task1);
+        taskManager.getTaskById(taskId);
+        taskManager.getTaskById(taskId1);
+
+        final List<Task> history = taskManager.getHistory();
+        final int sizeOfHistory = history.size();
+
+        assertEquals(2, sizeOfHistory, "История некорректна");
+    }
 }
