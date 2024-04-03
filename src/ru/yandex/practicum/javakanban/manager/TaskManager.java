@@ -4,11 +4,10 @@ import ru.yandex.practicum.javakanban.model.Epic;
 import ru.yandex.practicum.javakanban.model.Subtask;
 import ru.yandex.practicum.javakanban.model.Task;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
-    ArrayList<Task> getAllTasks(); // получение списка всех задач
+    List<Task> getAllTasks(); // получение списка всех задач
 
 
     void removeAllTasks(); // удаление всех задач
@@ -26,7 +25,7 @@ public interface TaskManager {
     void removeTaskById(int id); //удаление по идентификатору
 
 
-    ArrayList<Epic> getAllEpics(); // получение списка всех эпиков
+    List<Epic> getAllEpics(); // получение списка всех эпиков
 
 
     void removeAllEpic(); // удаление всех эпиков
@@ -44,10 +43,10 @@ public interface TaskManager {
     void removeEpicById(int id); // удаление эпика по идентификатору
 
 
-    ArrayList<Subtask> getEpicSubtasks(int epicId); //получение списка подзадач определенного эпика
+    List<Subtask> getEpicSubtasks(int epicId); //получение списка подзадач определенного эпика
 
 
-    ArrayList<Subtask> getAllSubtask(); // получение списка всех подзадач
+    List<Subtask> getAllSubtask(); // получение списка всех подзадач
 
 
     void removeAllSubtask(); // удаление всех подзадач
