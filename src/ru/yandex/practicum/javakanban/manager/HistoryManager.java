@@ -10,5 +10,5 @@ public interface HistoryManager {
 
     List<Task> getHistory(); // предоставление списка просмотров
 
-    void remove (int id); // удаление задачи из просмотра
+    void remove(int id); // удаление задачи из просмотра
   }
