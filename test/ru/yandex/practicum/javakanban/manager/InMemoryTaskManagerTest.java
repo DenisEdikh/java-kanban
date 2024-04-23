@@ -141,9 +141,11 @@ public class InMemoryTaskManagerTest {
         final List<Subtask> subtasks = taskManager.getAllSubtask();
         final int sizeOfTasks = subtasks.size();
         final Subtask removedSubtask = taskManager.getSubtaskById(subtaskId);
+        final boolean savedList = taskManager.getEpicById(epicId).getSubtaskIdS().contains(subtaskId);
 
         assertEquals(0, sizeOfTasks, "Неверное кол-во задач");
         assertNull(removedSubtask, "Задача найдена");
+        assertFalse(savedList, "Задача найдена");
     }
 
     @Test
@@ -263,7 +265,9 @@ public class InMemoryTaskManagerTest {
         final int taskId = taskManager.addNewTask(task);
         final int taskId1 = taskManager.addNewTask(task1);
         taskManager.getTaskById(taskId);
+        taskManager.getTaskById(taskId);
         taskManager.getTaskById(taskId1);
+        taskManager.getTaskById(taskId);
 
         final List<Task> history = taskManager.getHistory();
         final int sizeOfHistory = history.size();
