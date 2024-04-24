@@ -62,29 +62,38 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    void shouldReturnTasksWithOutDeletedTask() {
+    void shouldReturnTasksAndHistoryWithOutDeletedTask() {
         final int taskId = taskManager.addNewTask(task);
+        final int taskId1 = taskManager.addNewTask(task1);
 
+        taskManager.getTaskById(taskId);
+        taskManager.getTaskById(taskId1);
         taskManager.removeTaskById(taskId);
 
-        final List<Task> tasks = taskManager.getAllTasks();
-        final int sizeOfTasks = tasks.size();
+        final int sizeOfTasks = taskManager.getAllTasks().size();
         final Task removedTask = taskManager.getTaskById(taskId);
+        final boolean savedTask = taskManager.getHistory().contains(task);
 
-        assertEquals(0, sizeOfTasks, "Неверное кол-во задач");
+        assertEquals(1, sizeOfTasks, "Неверное кол-во задач");
+        assertFalse(savedTask, "Задача найдена");
         assertNull(removedTask, "Задача найдена");
     }
 
     @Test
-    void shouldReturnEmptyListOfTasks() {
-        taskManager.addNewTask(task);
-        taskManager.addNewTask(task1);
+    void shouldReturnEmptyListOfTasksAndHistory() {
+        final int taskId1 = taskManager.addNewTask(task);
+        final int taskId2 = taskManager.addNewTask(task1);
+
+        taskManager.getTaskById(taskId1);
+        taskManager.getTaskById(taskId1);
+        taskManager.getTaskById(taskId2);
         taskManager.removeAllTasks();
 
-        final List<Task> tasks = taskManager.getAllTasks();
-        final int savedSizeOfTasks = tasks.size();
+        final int savedSizeOfHistory = taskManager.getHistory().size();
+        final int savedSizeOfTasks = taskManager.getAllTasks().size();
 
         assertEquals(0, savedSizeOfTasks, "Задачи найдены");
+        assertEquals(0, savedSizeOfHistory, "Задачи найдены в истории");
     }
 
     @Test
@@ -92,6 +101,7 @@ public class InMemoryTaskManagerTest {
         final int epicId = taskManager.addNewEpic(epic);
 
         Subtask subtask = new Subtask("subtask of epic", "subtask description", epicId);
+
         final int subtaskId = taskManager.addNewSubtask(subtask);
         final Subtask savedSubtask = taskManager.getSubtaskById(subtaskId);
 
@@ -131,37 +141,48 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    void shouldReturnSubtasksWithOutDeletedSubtask() {
+    void shouldReturnSubtasksAndHistoryWithOutDeletedSubtask() {
         final int epicId = taskManager.addNewEpic(epic);
         Subtask subtask = new Subtask("subtask of epic", "subtask of epic description", epicId);
+        Subtask subtask1 = new Subtask("subtask of epic", "subtask of epic description", epicId);
         final int subtaskId = taskManager.addNewSubtask(subtask);
+        final int subtaskId1 = taskManager.addNewSubtask(subtask1);
+
+        taskManager.getSubtaskById(subtaskId);
+        taskManager.getSubtaskById(subtaskId1);
 
         taskManager.removeSubtaskById(subtaskId);
 
-        final List<Subtask> subtasks = taskManager.getAllSubtask();
-        final int sizeOfTasks = subtasks.size();
         final Subtask removedSubtask = taskManager.getSubtaskById(subtaskId);
+        final int sizeOfSubtasks = taskManager.getAllSubtask().size();
+        final boolean savedSubtask = taskManager.getHistory().contains(subtask);
         final boolean savedList = taskManager.getEpicById(epicId).getSubtaskIdS().contains(subtaskId);
 
-        assertEquals(0, sizeOfTasks, "Неверное кол-во задач");
+        assertEquals(1, sizeOfSubtasks, "Неверное кол-во задач");
+        assertFalse(savedSubtask, "Задача найдена");
         assertNull(removedSubtask, "Задача найдена");
         assertFalse(savedList, "Задача найдена");
     }
 
     @Test
-    void shouldReturnEmptyListOfSubtasks() {
+    void shouldReturnEmptyListOfSubtasksAndHistory() {
         final int epicId = taskManager.addNewEpic(epic);
         Subtask subtask = new Subtask("Subtask", "Subtask description", epicId);
         Subtask subtask1 = new Subtask("Subtask1", "Subtask1 description", epicId);
 
-        taskManager.addNewSubtask(subtask);
-        taskManager.addNewSubtask(subtask1);
+        final int subtaskId = taskManager.addNewSubtask(subtask);
+        final int subtaskId1 = taskManager.addNewSubtask(subtask1);
+
+        taskManager.getSubtaskById(subtaskId);
+        taskManager.getSubtaskById(subtaskId1);
+        taskManager.getSubtaskById(subtaskId1);
         taskManager.removeAllSubtask();
 
-        final List<Subtask> subtasks = taskManager.getAllSubtask();
-        final int savedSizeOfSubtasks = subtasks.size();
+        final int savedSizeOfSubtasks = taskManager.getAllSubtask().size();
+        final int savedSizeOfHistory = taskManager.getHistory().size();
 
         assertEquals(0, savedSizeOfSubtasks, "Подзадачи найдены");
+        assertEquals(0, savedSizeOfHistory, "Подзадачи найдены в истории");
     }
 
     @Test
@@ -183,7 +204,9 @@ public class InMemoryTaskManagerTest {
     @Test
     void shouldReturn1UpdatedEpic() {
         final int epicId = taskManager.addNewEpic(epic);
+
         Epic newEpic = new Epic("newEpic", "newEpic descriptionNew", epicId);
+
         taskManager.updateEpic(newEpic);
 
         final List<Epic> epics = taskManager.getAllEpics();
@@ -196,29 +219,42 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    void shouldReturnEpicsWithOutDeletedEpics() {
+    void shouldReturnEpicsAndHistoryWithOutDeletedEpics() {
         final int epicId = taskManager.addNewEpic(epic);
+        final int epicId1 = taskManager.addNewEpic(epic1);
 
+        Subtask subtask = new Subtask("Subtask", "Subtask description", epicId);
+
+        final int subtaskId = taskManager.addNewSubtask(subtask);
+
+        taskManager.getEpicById(epicId);
+        taskManager.getEpicById(epicId);
+        taskManager.getEpicById(epicId1);
+        taskManager.getSubtaskById(subtaskId);
         taskManager.removeEpicById(epicId);
 
-        final List<Epic> epics = taskManager.getAllEpics();
-        final int sizeOfEpics = epics.size();
+        final int sizeOfEpics = taskManager.getAllEpics().size();
         final Epic removedEpic = taskManager.getEpicById(epicId);
+        final boolean savedEpic = taskManager.getHistory().contains(epic);
+        final boolean savedSubtask = taskManager.getHistory().contains(subtask);
 
-        assertEquals(0, sizeOfEpics, "Неверное кол-во эпиков'");
+        assertEquals(1, sizeOfEpics, "Неверное кол-во эпиков'");
+        assertFalse(savedEpic, "Эпик найден в истории");
+        assertFalse(savedSubtask, "Подзадача эпика найдена в истории");
         assertNull(removedEpic, "Эпик найден");
     }
 
     @Test
-    void shouldReturnEmptyListOfEpics() {
+    void shouldReturnEmptyListOfEpicsAndHistory() {
         taskManager.addNewEpic(epic);
         taskManager.addNewEpic(epic1);
         taskManager.removeAllEpic();
 
-        final List<Epic> epics = taskManager.getAllEpics();
-        final int savedSizeOfEpics = epics.size();
+        final int savedSizeOfEpics = taskManager.getAllEpics().size();
+        final int savedSizeOfHistory = taskManager.getHistory().size();
 
         assertEquals(0, savedSizeOfEpics, "Эпики найдены");
+        assertEquals(0, savedSizeOfHistory, "Эпики найдены в истории");
     }
 
     @Test
