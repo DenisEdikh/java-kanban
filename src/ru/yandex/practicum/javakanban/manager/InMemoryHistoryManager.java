@@ -29,15 +29,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node getNext() {
             return next;
         }
-
-//        @Override
-//        public String toString() {
-//            return "Node{" +
-//                    "prev=" + prev +
-//                    ", task=" + task +
-//                    ", next=" + next +
-//                    '}';
-//        }
     }
 
     Node getHead() {
@@ -87,7 +78,6 @@ public class InMemoryHistoryManager implements HistoryManager {
             next.prev = prev;
             node.next = null;
         }
-        node.task = null;
     }
 
     private final Map<Integer, Node> history = new HashMap<>();
