@@ -32,6 +32,11 @@ public class Epic extends Task {
     } // удаление всех подзадач
 
     @Override
+    public TypeOfTask getType() {
+        return TypeOfTask.EPIC;
+    }
+
+    @Override
     public String toString() {
         return "Epic{" +
                 "id=" + id +
