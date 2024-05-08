@@ -35,9 +35,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             for (int i = 1; i < taskList.size(); i++) {
                 int id = toTaskFromString(taskList.get(i)).getId();
 
-                if (toTaskFromString(taskList.get(i)).getClass().equals(Task.class)) {
+                TypeOfTask taskOfType = toTaskFromString(taskList.get(i)).getType();
+                if (taskOfType.equals(TypeOfTask.TASK)) {
                     tasks.put(id, toTaskFromString(taskList.get(i)));
-                } else if (toTaskFromString(taskList.get(i)).getClass().equals(Epic.class)) {
+                } else if (taskOfType.equals(TypeOfTask.EPIC)) {
                     epics.put(id, (Epic) toTaskFromString(taskList.get(i)));
                 } else {
                     subtasks.put(id, (Subtask) toTaskFromString(taskList.get(i)));
@@ -89,21 +90,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private String toStringFromTask(Task task) {
-        TypeOfTask type;
         String numberOfEpic = "";
-        // Проверяем кдасс поступившей задачи и присваиваем нужное значение
-        if (Task.class == task.getClass()) {
-            type = TypeOfTask.TASK;
-        } else if (Epic.class == task.getClass()) {
-            type = TypeOfTask.EPIC;
-        } else {
-            type = TypeOfTask.SUBTASK;
+        // В случае subtask присваиваем новое значение переменной numberOfEpic
+        if (task.getType().equals(TypeOfTask.SUBTASK)) {
             numberOfEpic = String.valueOf(((Subtask) task).getEpicId());
         }
         // Собираем стрингу
         return String.join(",",
                 String.valueOf(task.getId()),
-                String.valueOf(type),
+                String.valueOf(task.getType()),
                 task.getTitle(),
                 String.valueOf(task.getStatus()),
                 task.getDescription(),
