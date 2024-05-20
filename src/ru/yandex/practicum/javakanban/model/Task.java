@@ -58,6 +58,10 @@ public class Task {
         this.status = status;
     }
 
+    public TypeOfTask getType() {
+        return TypeOfTask.TASK;
+    }
+
     @Override
     public String toString() {
         return "Task{" +
