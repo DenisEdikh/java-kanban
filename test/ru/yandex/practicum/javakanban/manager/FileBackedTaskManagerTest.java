@@ -32,7 +32,7 @@ public class FileBackedTaskManagerTest {
             fileBackedTaskManager =
                     new FileBackedTaskManager(path);
         } catch (IOException e) {
-            throw new ManagerSaveException();
+            throw new ManagerSaveException("Файл отсутствует!");
         }
         task = new Task("Task", "Task description");
         task1 = new Task("Task1", "Task1 description");
@@ -339,7 +339,7 @@ public class FileBackedTaskManagerTest {
             final int size = listTask.size() - 1; // Не учитывается заголовок
             assertEquals(2, size, "Неверное кол-во задач");
         } catch (IOException e) {
-            throw new ManagerSaveException();
+            throw new ManagerSaveException(e);
         }
     }
 

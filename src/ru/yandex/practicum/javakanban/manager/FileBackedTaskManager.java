@@ -26,7 +26,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try {
             // Проверяем, есть ли файл и в случае отсутствия или несоответствия пути выбрасываем своё исключение
             if (!Files.exists(path)) {
-                throw new ManagerSaveException();
+                throw new ManagerSaveException("Файл отсутствует!");
             }
             // Записываем в список всё содержимое файла построчно
             List<String> taskList = Files.readAllLines(path, StandardCharsets.UTF_8);
@@ -53,7 +53,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 epics.get(subtask.getEpicId()).addSubtaskId(subtask.getId());
             }
         } catch (IOException e) {
-            throw new ManagerSaveException();
+            throw new ManagerSaveException(e);
         }
     }
 
@@ -80,7 +80,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             Files.write(path, taskList, StandardCharsets.UTF_8);
 
         } catch (IOException e) {
-            throw new ManagerSaveException();
+            throw new ManagerSaveException(e);
         }
     }
 
