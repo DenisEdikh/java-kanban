@@ -1,12 +1,15 @@
 package ru.yandex.practicum.javakanban.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Epic extends Task {
     protected ArrayList<Integer> subtaskIdS;
+    protected LocalDateTime endTime;
 
     public Epic(String title, String description) {
-        super(title, description);
+        super(title, description, null, 0);
+        this.endTime = null;
         this.subtaskIdS = new ArrayList<>();
     } // конструктор создания эпиков
 
@@ -31,6 +34,15 @@ public class Epic extends Task {
         subtaskIdS.clear();
     } // удаление всех подзадач
 
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
     @Override
     public TypeOfTask getType() {
         return TypeOfTask.EPIC;
@@ -39,11 +51,14 @@ public class Epic extends Task {
     @Override
     public String toString() {
         return "Epic{" +
-                "id=" + id +
+                "subtaskIdS=" + subtaskIdS +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
-                ", listOfSubtask=" + subtaskIdS +
+                ", id=" + id +
+                ", startTime=" + startTime +
+                ", duration=" + duration +
+                ", endTime=" + endTime +
                 '}';
     }
 }
