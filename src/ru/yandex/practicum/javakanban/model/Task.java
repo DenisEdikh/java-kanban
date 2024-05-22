@@ -1,30 +1,49 @@
 package ru.yandex.practicum.javakanban.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Task {
     protected String title;
     protected String description;
     protected int id;
     protected Status status;
+    protected Duration duration;
+    protected LocalDateTime startTime;
 
-    public Task(String title, String description) {
+    // конструктор создания новой задачи
+    public Task(String title, String description, LocalDateTime startTime, long duration) {
         this.title = title;
         this.description = description;
         this.status = Status.NEW;
-    } // конструктор создания новой задачи
+        this.startTime = startTime;
+        this.duration = Duration.ofMinutes(duration);
+    }
 
+    // конструктор для обновления задачи/подзадачи по верному id
 
-    public Task(String title, String description, Status status, int id) {
+    public Task(String title, String description, Status status, int id, LocalDateTime startTime, long duration) {
         this.title = title;
         this.description = description;
         this.id = id;
         this.status = status;
-    } // конструктор для обновления задачи/подзадачи по верному id
+        this.startTime = startTime;
+        this.duration = Duration.ofMinutes(duration);
+    }
 
-    public Task(String title, String description, int id) {
+    // конструктор только для создания эпиков (отдельно для создания задачи не используется)
+    protected Task(String title, String description) {
+        this.title = title;
+        this.description = description;
+        this.status = Status.NEW;
+    }
+
+    // конструктор только для обновления эпиков
+    protected Task(String title, String description, int id) {
         this.title = title;
         this.description = description;
         this.id = id;
-    } // конструктор для обновления эпиков
+    }
 
     public String getDescription() {
         return description;
@@ -62,13 +81,34 @@ public class Task {
         return TypeOfTask.TASK;
     }
 
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = Duration.ofMinutes(duration);
+    }
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return startTime.plus(duration);
+    }
+
     @Override
     public String toString() {
         return "Task{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
+                "title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
+                ", id=" + id +
+                ", startTime=" + startTime +
+                ", duration=" + duration +
                 '}';
     }
 
