@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,13 +18,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private final Path path;
 
     // Конструктор для создания менеджера с файлом сохранения по пути path
-    public FileBackedTaskManager(String path) {
-        this.path = Path.of(path);
+    public FileBackedTaskManager(Path path) {
+        this.path = path;
     }
 
     // Конструктор для загрузки менеджера из файла
     private FileBackedTaskManager(File file) {
-        this(file.getPath());
+        this(file.toPath());
         try {
             // Проверяем, есть ли файл и в случае отсутствия или несоответствия пути выбрасываем своё исключение
             if (!Files.exists(path)) {
@@ -62,7 +64,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             // Создаем список, в котором будут храниться в виде стринги все имеющиеся задачи
             List<String> taskList = new ArrayList<>();
             // Добавляем заголовок
-            String heading = "id,type,name,status,description,epic";
+            String heading = "id,type,name,status,description,epic,startTime,duration,endTime";
             taskList.add(heading);
 
             // Записываем все задачи, эпики и подзадачи
@@ -90,11 +92,18 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private String toStringFromTask(Task task) {
-        String numberOfEpic = "";
+        String numberOfEpic = " ";
         // В случае subtask присваиваем новое значение переменной numberOfEpic
         if (task.getType().equals(TypeOfTask.SUBTASK)) {
             numberOfEpic = String.valueOf(((Subtask) task).getEpicId());
         }
+        String startTime = " ";
+        String endTime = " ";
+        if (task.getStartTime() != null) {
+            startTime = String.valueOf(task.getStartTime());
+            endTime = String.valueOf(task.getEndTime());
+        }
+
         // Собираем стрингу
         return String.join(",",
                 String.valueOf(task.getId()),
@@ -102,29 +111,51 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 task.getTitle(),
                 String.valueOf(task.getStatus()),
                 task.getDescription(),
-                numberOfEpic
+                numberOfEpic,
+                startTime,
+                String.valueOf(task.getDuration().toMinutes()),
+                endTime
         );
     }
 
     private Task toTaskFromString(String value) {
         // Разделяем стрингу
-        String[] str = value.split(",");
+        final String[] str = value.split(",");
         // Присваиваем определенным переменным значения из массива стринги str
-        int id = Integer.parseInt(str[0]);
-        TypeOfTask type = TypeOfTask.valueOf(str[1]);
-        String title = str[2];
-        Status status = Status.valueOf(str[3]);
-        String description = str[4];
+        final int id = Integer.parseInt(str[0]);
+        final TypeOfTask type = TypeOfTask.valueOf(str[1]);
+        final String title = str[2];
+        final Status status = Status.valueOf(str[3]);
+        final String description = str[4];
+        final LocalDateTime startTime;
+        final LocalDateTime endTime;
+
+        if (str[6].equals(" ")) {
+            startTime = null;
+        } else {
+            startTime = LocalDateTime.parse(str[6]);
+        }
+
+        final long duration = Integer.parseInt(str[7]);
+
+        if (str[8].equals(" ")) {
+            endTime = null;
+        } else {
+            endTime = LocalDateTime.parse(str[8]);
+        }
 
         // В зависимости от типа задачи инициализируем соответственно
         if (TypeOfTask.TASK.equals(type)) {
-            return new Task(title, description, status, id);
+            return new Task(title, description, status, id, startTime, duration);
         } else if (TypeOfTask.EPIC.equals(type)) {
             Epic epic = new Epic(title, description, id);
             epic.setStatus(status);
+            epic.setDuration(duration);
+            epic.setStartTime(startTime);
+            epic.setEndTime(endTime);
             return epic;
         } else {
-            return new Subtask(title, description, status, id, Integer.parseInt(str[5]));
+            return new Subtask(title, description, status, id, Integer.parseInt(str[5]), startTime, duration);
         }
     }
 
@@ -206,14 +237,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public static void main(String[] args) {
 
         TaskManager fileBackedTaskManager =
-                new FileBackedTaskManager("src/ru/yandex/practicum/javakanban/resourses/memory-file.csv");
+                new FileBackedTaskManager(Path.of("src/ru/yandex/practicum/javakanban/resourses/memory-file.csv"));
 
-        int idT1 = fileBackedTaskManager.addNewTask(new Task("T1", "t1"));
-        int idT2 = fileBackedTaskManager.addNewTask(new Task("T2", "t2"));
+        int idT1 = fileBackedTaskManager.addNewTask(new Task("T1", "t1", null, 10));
+        int idT2 = fileBackedTaskManager.addNewTask(new Task("T2", "t2", LocalDateTime.of(2025, Month.MAY, 22, 16, 30), 10));
         int idE1 = fileBackedTaskManager.addNewEpic(new Epic("E1", "e1"));
-        int idS1 = fileBackedTaskManager.addNewSubtask(new Subtask("S1", "s1", idE1));
-        int idS2 = fileBackedTaskManager.addNewSubtask(new Subtask("S2", "s2", idE1));
-        int idS3 = fileBackedTaskManager.addNewSubtask(new Subtask("S3", "s3", idE1));
+        int idS1 = fileBackedTaskManager.addNewSubtask(new Subtask("S1", "s1", idE1, null, 10));
+        int idS2 = fileBackedTaskManager.addNewSubtask(new Subtask("S2", "s2", idE1, LocalDateTime.of(2024, Month.MAY, 22, 16, 32), 7));
+        int idS3 = fileBackedTaskManager.addNewSubtask(new Subtask("S3", "s3", idE1, LocalDateTime.of(2024, Month.MAY, 22, 16, 40), 2));
         int idE2 = fileBackedTaskManager.addNewEpic(new Epic("E2", "e2"));
 
         List<Task> taskList = fileBackedTaskManager.getAllTasks();
