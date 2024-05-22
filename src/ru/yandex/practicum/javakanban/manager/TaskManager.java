@@ -5,6 +5,7 @@ import ru.yandex.practicum.javakanban.model.Subtask;
 import ru.yandex.practicum.javakanban.model.Task;
 
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
     List<Task> getAllTasks(); // получение списка всех задач
@@ -64,5 +65,7 @@ public interface TaskManager {
     void removeSubtaskById(int id); // удаление подзадачи по идентификатору
 
     List<Task> getHistory();
+
+    Set<Task> getPrioritizedTasks();
 
 }
