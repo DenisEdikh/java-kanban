@@ -88,6 +88,7 @@ public class Task {
     public void setDuration(long duration) {
         this.duration = Duration.ofMinutes(duration);
     }
+
     public LocalDateTime getStartTime() {
         return startTime;
     }
