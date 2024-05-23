@@ -2,6 +2,8 @@ package ru.yandex.practicum.javakanban.manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import ru.yandex.practicum.javakanban.model.Epic;
 import ru.yandex.practicum.javakanban.model.Status;
 import ru.yandex.practicum.javakanban.model.Subtask;
@@ -13,7 +15,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public abstract class TaskManagerTest <T extends TaskManager> {
+public abstract class TaskManagerTest<T extends TaskManager> {
     protected T taskManager;
     protected Task task;
     protected Task task1;
@@ -22,7 +24,7 @@ public abstract class TaskManagerTest <T extends TaskManager> {
 
     protected TaskManagerTest(T taskManager) {
         this.taskManager = taskManager;
-           }
+    }
 
     @BeforeEach
     void beforeEach() {
@@ -34,7 +36,6 @@ public abstract class TaskManagerTest <T extends TaskManager> {
         epic = new Epic("epic", "epic description");
         epic1 = new Epic("Epic1", "Epic1 description");
     }
-
 
     @Test
     void shouldReturn1AddedTask() {
@@ -83,12 +84,11 @@ public abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.removeTaskById(taskId);
 
         final int sizeOfTasks = taskManager.getAllTasks().size();
-        final Task removedTask = taskManager.getTaskById(taskId);
         final boolean savedTask = taskManager.getHistory().contains(task);
 
         assertEquals(1, sizeOfTasks, "Неверное кол-во задач");
         assertFalse(savedTask, "Задача найдена");
-        assertNull(removedTask, "Задача найдена");
+        assertThrows(ManagerSaveException.class, () -> taskManager.getTaskById(taskId), "Задача найдена");
     }
 
     @Test
@@ -186,15 +186,14 @@ public abstract class TaskManagerTest <T extends TaskManager> {
 
         taskManager.removeSubtaskById(subtaskId);
 
-        final Subtask removedSubtask = taskManager.getSubtaskById(subtaskId);
         final int sizeOfSubtasks = taskManager.getAllSubtask().size();
         final boolean savedSubtask = taskManager.getHistory().contains(subtask);
         final boolean savedList = taskManager.getEpicById(epicId).getSubtaskIdS().contains(subtaskId);
 
         assertEquals(1, sizeOfSubtasks, "Неверное кол-во задач");
         assertFalse(savedSubtask, "Задача найдена");
-        assertNull(removedSubtask, "Задача найдена");
         assertFalse(savedList, "Задача найдена");
+        assertThrows(ManagerSaveException.class, () -> taskManager.getSubtaskById(subtaskId), "Задача найдена");
     }
 
     @Test
@@ -279,14 +278,13 @@ public abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.removeEpicById(epicId);
 
         final int sizeOfEpics = taskManager.getAllEpics().size();
-        final Epic removedEpic = taskManager.getEpicById(epicId);
         final boolean savedEpic = taskManager.getHistory().contains(epic);
         final boolean savedSubtask = taskManager.getHistory().contains(subtask);
 
         assertEquals(1, sizeOfEpics, "Неверное кол-во эпиков'");
         assertFalse(savedEpic, "Эпик найден в истории");
         assertFalse(savedSubtask, "Подзадача эпика найдена в истории");
-        assertNull(removedEpic, "Эпик найден");
+        assertThrows(ManagerSaveException.class, () -> taskManager.getEpicById(epicId), "Эпик найден");
     }
 
     @Test
@@ -302,8 +300,9 @@ public abstract class TaskManagerTest <T extends TaskManager> {
         assertEquals(0, savedSizeOfHistory, "Эпики найдены в истории");
     }
 
-    @Test
-    void shouldReturnUpdatedStatusEpics() {
+    @ParameterizedTest
+    @EnumSource(Status.class)
+    void shouldReturnUpdatedStatusEpics_1(Status status) {
         final int epicId = taskManager.addNewEpic(epic);
         final Epic savedEpic = taskManager.getEpicById(epicId);
         Subtask subtask = new Subtask("subtask of epic",
@@ -317,21 +316,34 @@ public abstract class TaskManagerTest <T extends TaskManager> {
                 LocalDateTime.of(2025, Month.MAY, 22, 16, 32),
                 8);
 
-        assertEquals(Status.NEW, savedEpic.getStatus(), "Статус некорректне");
+        subtask.setStatus(status);
+        subtask1.setStatus(status);
+        final int subtaskId = taskManager.addNewSubtask(subtask);
+        final int subtask1Id = taskManager.addNewSubtask(subtask1);
+
+        assertEquals(status, savedEpic.getStatus(), "Статус некорректен");
+    }
+
+    @Test
+    void shouldReturnUpdatedStatusEpics_2() {
+        final int epicId = taskManager.addNewEpic(epic);
+        final Epic savedEpic = taskManager.getEpicById(epicId);
+        Subtask subtask = new Subtask("subtask of epic",
+                "subtask description",
+                epicId,
+                LocalDateTime.of(2024, Month.MAY, 22, 16, 32),
+                7);
+        Subtask subtask1 = new Subtask("subtask1 of epic",
+                "subtask1 description",
+                epicId,
+                LocalDateTime.of(2025, Month.MAY, 22, 16, 32),
+                8);
+        subtask.setStatus(Status.NEW);
+        subtask1.setStatus(Status.DONE);
 
         final int subtaskId = taskManager.addNewSubtask(subtask);
         final int subtask1Id = taskManager.addNewSubtask(subtask1);
 
-        assertEquals(Status.NEW, savedEpic.getStatus(), "Статус некорректен");
-
-        Subtask newSubtask1 = new Subtask("newSubtask1", "newSubtask1 description",
-                Status.DONE,
-                subtask1Id,
-                epicId,
-                LocalDateTime.of(2026, Month.MAY, 22, 16, 32),
-                10);
-
-        taskManager.updateSubTask(newSubtask1);
         assertEquals(Status.IN_PROGRESS, savedEpic.getStatus(), "Статус некорректен");
     }
 
@@ -366,6 +378,36 @@ public abstract class TaskManagerTest <T extends TaskManager> {
         final int sizeOfHistory = history.size();
 
         assertEquals(2, sizeOfHistory, "История некорректна");
+    }
+
+    @Test
+    void shouldNotAddTaskIfHaveOverlayByStartTime() {
+        Task task2 = new Task("Task1",
+                "Task1 description",
+                LocalDateTime.of(2025, Month.MAY, 22, 16, 35),
+                10);
+        Task task3 = new Task("Task1",
+                "Task1 description",
+                LocalDateTime.of(2025, Month.MAY, 22, 17, 35),
+                10);
+
+        final int taskId1 = taskManager.addNewTask(task1);
+        final int taskId2 = taskManager.addNewTask(task2);
+        final int taskId3 = taskManager.addNewTask(task3);
+
+        assertTrue(taskManager.getAllTasks().contains(task3), "Задача не найдена");
+        assertFalse(taskManager.getAllTasks().contains(task2), "Задача найдена");
+    }
+
+    @Test
+    void shouldAdd1TaskToPrioritizedTasks() {
+        final int taskId = taskManager.addNewTask(task);
+        final int taskId1 = taskManager.addNewTask(task1);
+        final int sizeOfPrioritizedTasks = taskManager.getPrioritizedTasks().size();
+        final int sizeOfTasks = taskManager.getAllTasks().size();
+
+        assertEquals(1, sizeOfPrioritizedTasks, "Неверное кол-во задач");
+        assertEquals(2, sizeOfTasks, "Неверное кол-во задач");
     }
 }
 
