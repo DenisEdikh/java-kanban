@@ -37,25 +37,30 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTaskById(int id) {
-        final Task task = tasks.get(id);
+        final Optional<Task> optionalTask = Optional.ofNullable(tasks.get(id));
+        final Task task = optionalTask.orElseThrow(() -> new ManagerSaveException("Задача отсутствует"));
         historyManager.addTaskToHistory(task);
         return task;
     } // получение задачи по идентификатору
 
     @Override
     public int addNewTask(Task task) {
-        if (task.getStartTime() != null) { //Проверка, что startTime указано, если нет, добавляем только в список tasks
-            boolean isOverlay = prioritizedTasks
-                    .stream()
-                    .anyMatch(oldTask -> isOverlayTasks(oldTask, task));
-            if (isOverlay) {
-                return -1; //Если задача накладывается на существующие, то не добавляем никуда
+        if (task == null) {
+            throw new ManagerSaveException("Задача отсутствует");
+        } else {
+            if (task.getStartTime() != null) { //Проверка, что startTime указано, если нет, добавляем только в список tasks
+                boolean isOverlay = prioritizedTasks
+                        .stream()
+                        .anyMatch(oldTask -> isOverlayTasks(oldTask, task));
+                if (isOverlay) {
+                    return -1; //Если задача накладывается на существующие, то не добавляем никуда
+                }
+                prioritizedTasks.add(task);
             }
-            prioritizedTasks.add(task);
+            task.setId(++counterId);
+            tasks.put(counterId, task);
+            return counterId;
         }
-        task.setId(++counterId);
-        tasks.put(counterId, task);
-        return counterId;
     } // добавление новой задачи
 
     @Override
@@ -86,7 +91,7 @@ public class InMemoryTaskManager implements TaskManager {
     } //удаление по идентификатору
 
     @Override
-    public ArrayList<Epic> getAllEpics() {
+    public List<Epic> getAllEpics() {
         return new ArrayList<>(epics.values());
     } // получение списка всех эпиков
 
@@ -109,16 +114,21 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic getEpicById(int id) {
-        final Epic epic = epics.get(id);
+        final Optional<Epic> optionalEpic = Optional.ofNullable(epics.get(id));
+        final Epic epic = optionalEpic.orElseThrow(() -> new ManagerSaveException("Эпик отсутствует"));
         historyManager.addTaskToHistory(epic);
         return epic;
     } // получение эпика по идентификатору
 
     @Override
     public int addNewEpic(Epic epic) {
-        epic.setId(++counterId);
-        epics.put(counterId, epic);
-        return counterId;
+        if (epic == null) {
+            throw new ManagerSaveException("Эпик отсутствует");
+        } else {
+            epic.setId(++counterId);
+            epics.put(counterId, epic);
+            return counterId;
+        }
     } //добавление нового эпика
 
     @Override
@@ -156,7 +166,7 @@ public class InMemoryTaskManager implements TaskManager {
     } //получение списка подзадач определенного эпика
 
     @Override
-    public ArrayList<Subtask> getAllSubtask() {
+    public List<Subtask> getAllSubtask() {
         return new ArrayList<>(subtasks.values());
     } // получение списка всех подзадач
 
@@ -181,33 +191,38 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Subtask getSubtaskById(int id) {
-        final Subtask subtask = subtasks.get(id);
+        final Optional<Subtask> optionalSubtask = Optional.ofNullable(subtasks.get(id));
+        final Subtask subtask = optionalSubtask.orElseThrow(() -> new ManagerSaveException("Подзадача отсутствует"));
         historyManager.addTaskToHistory(subtask);
         return subtask;
     } // получение подзадачи по идентификатору
 
     @Override
     public int addNewSubtask(Subtask subtask) {
-        if (epics.containsKey(subtask.getEpicId())) {
-            //Проверка, что startTime указано, если нет, добавляем только в список subtasks
-            if (subtask.getStartTime() != null) {
-                boolean isOverlay = prioritizedTasks
-                        .stream()
-                        .anyMatch(oldSubtask -> isOverlayTasks(oldSubtask, subtask));
-                if (isOverlay) {
-                    return -1; //Если подзадача накладывается на существующие, то не добавляем никуда
+        if (subtask == null) {
+            throw new ManagerSaveException("Подзадача отсутствует");
+        } else {
+            if (epics.containsKey(subtask.getEpicId())) {
+                //Проверка, что startTime указано, если нет, добавляем только в список subtasks
+                if (subtask.getStartTime() != null) {
+                    boolean isOverlay = prioritizedTasks
+                            .stream()
+                            .anyMatch(oldSubtask -> isOverlayTasks(oldSubtask, subtask));
+                    if (isOverlay) {
+                        return -1; //Если подзадача накладывается на существующие, то не добавляем никуда
+                    }
+                    prioritizedTasks.add(subtask);
                 }
-                prioritizedTasks.add(subtask);
+                subtask.setId(++counterId);
+                epics.get(subtask.getEpicId()).addSubtaskId(counterId);
+                subtasks.put(counterId, subtask);
+                updateStatusOfEpic(subtask.getEpicId());
+                //обновление длительности и времени начала/завершения эпика
+                updateDurationAndStartTimeOfEpic(subtask.getEpicId());
+                return counterId;
             }
-            subtask.setId(++counterId);
-            epics.get(subtask.getEpicId()).addSubtaskId(counterId);
-            subtasks.put(counterId, subtask);
-            updateStatusOfEpic(subtask.getEpicId());
-            //обновление длительности и времени начала/завершения эпика
-            updateDurationAndStartTimeOfEpic(subtask.getEpicId());
-            return counterId;
+            return -1;
         }
-        return -1;
     } //добавление подзадачи
 
     @Override
