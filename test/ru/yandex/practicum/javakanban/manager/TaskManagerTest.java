@@ -392,11 +392,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
                 10);
 
         final int taskId1 = taskManager.addNewTask(task1);
-        final int taskId2 = taskManager.addNewTask(task2);
         final int taskId3 = taskManager.addNewTask(task3);
 
         assertTrue(taskManager.getAllTasks().contains(task3), "Задача не найдена");
-        assertFalse(taskManager.getAllTasks().contains(task2), "Задача найдена");
+        assertThrows(ManagerTimeException.class, () -> taskManager.addNewTask(task2), "Задача найдена");
     }
 
     @Test
