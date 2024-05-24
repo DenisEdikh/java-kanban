@@ -39,11 +39,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
                 TypeOfTask taskOfType = toTaskFromString(taskList.get(i)).getType();
                 if (taskOfType.equals(TypeOfTask.TASK)) {
-                    tasks.put(id, toTaskFromString(taskList.get(i)));
+                    final Task task = toTaskFromString(taskList.get(i));
+                    tasks.put(id, task);
+                    if (task.getStartTime() != null) {
+                        prioritizedTasks.add(task);
+                    }
                 } else if (taskOfType.equals(TypeOfTask.EPIC)) {
                     epics.put(id, (Epic) toTaskFromString(taskList.get(i)));
                 } else {
-                    subtasks.put(id, (Subtask) toTaskFromString(taskList.get(i)));
+                    final Subtask subtask = (Subtask) toTaskFromString(taskList.get(i));
+                    subtasks.put(id, subtask);
+                    if (subtask.getStartTime() != null) {
+                        prioritizedTasks.add(subtask);
+                    }
                 }
                 // Счетчику присваиваем значение созданной последней задачи
                 if (counterId < id) {
