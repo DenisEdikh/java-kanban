@@ -53,6 +53,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             // Заполняем информацию для эпика по хранящимся подзадачам у него
             for (Subtask subtask : subtasks.values()) {
                 epics.get(subtask.getEpicId()).addSubtaskId(subtask.getId());
+                updateDurationAndStartTimeOfEpic(subtask.getEpicId());
             }
         } catch (IOException e) {
             throw new ManagerSaveException(e);
@@ -64,7 +65,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             // Создаем список, в котором будут храниться в виде стринги все имеющиеся задачи
             List<String> taskList = new ArrayList<>();
             // Добавляем заголовок
-            String heading = "id,type,name,status,description,epic,startTime,duration,endTime";
+            String heading = "id,type,name,status,description,epic,startTime,duration";
             taskList.add(heading);
 
             // Записываем все задачи, эпики и подзадачи
@@ -96,7 +97,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String description = " ";
         String numberOfEpic = " ";
         String startTime = " ";
-        String endTime = " ";
 
         if (task.getTitle() != null) {
             title = task.getTitle();
@@ -110,7 +110,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
         if (task.getStartTime() != null) {
             startTime = String.valueOf(task.getStartTime());
-            endTime = String.valueOf(task.getEndTime());
         }
         // Собираем стрингу
         return String.join(",",
@@ -121,8 +120,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 description,
                 numberOfEpic,
                 startTime,
-                String.valueOf(task.getDuration().toMinutes()),
-                endTime
+                String.valueOf(task.getDuration().toMinutes())
         );
     }
 
@@ -136,7 +134,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         final Status status = Status.valueOf(str[3]);
         final String description;
         final LocalDateTime startTime;
-        final LocalDateTime endTime;
 
         if ((" ").equals(str[2])) {
             title = null;
@@ -156,12 +153,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         final long duration = Integer.parseInt(str[7]);
 
-        if ((" ").equals(str[8])) {
-            endTime = null;
-        } else {
-            endTime = LocalDateTime.parse(str[8]);
-        }
-
         // В зависимости от типа задачи инициализируем соответственно
         if (TypeOfTask.TASK.equals(type)) {
             return new Task(title, description, status, id, startTime, duration);
@@ -170,7 +161,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             epic.setStatus(status);
             epic.setDuration(duration);
             epic.setStartTime(startTime);
-            epic.setEndTime(endTime);
             return epic;
         } else {
             return new Subtask(title, description, status, id, Integer.parseInt(str[5]), startTime, duration);
