@@ -49,11 +49,11 @@ public class InMemoryTaskManager implements TaskManager {
             throw new ManagerSaveException("Задача отсутствует");
         } else {
             if (task.getStartTime() != null) { //Проверка, что startTime указано, если нет, добавляем только в список tasks
-                boolean isOverlay = prioritizedTasks
+                //Если задача накладывается на существующие, то не добавляем никуда
+                if (prioritizedTasks
                         .stream()
-                        .anyMatch(oldTask -> isOverlayTasks(oldTask, task));
-                if (isOverlay) {
-                    return -1; //Если задача накладывается на существующие, то не добавляем никуда
+                        .anyMatch(oldTask -> isOverlayTasks(oldTask, task))) {
+                    throw new ManagerTimeException("Наложение задач по времени");
                 }
                 prioritizedTasks.add(task);
             }
@@ -67,11 +67,11 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateTask(Task task) {
         if (tasks.containsKey(task.getId())) {
             if (task.getStartTime() != null) { //Проверка, что startTime указано, если нет, добавляем только в список tasks
-                boolean isOverlay = prioritizedTasks
+                //Если задача накладывается на существующие, то не добавляем никуда
+                if (prioritizedTasks
                         .stream()
-                        .anyMatch(oldTask -> isOverlayTasks(oldTask, task));
-                if (isOverlay) {
-                    return; //Если задача накладывается на существующие, то не добавляем никуда
+                        .anyMatch(oldTask -> isOverlayTasks(oldTask, task))) {
+                    throw new ManagerTimeException("Наложение задач по времени");
                 }
                 prioritizedTasks.add(task);
             }
@@ -205,11 +205,10 @@ public class InMemoryTaskManager implements TaskManager {
             if (epics.containsKey(subtask.getEpicId())) {
                 //Проверка, что startTime указано, если нет, добавляем только в список subtasks
                 if (subtask.getStartTime() != null) {
-                    boolean isOverlay = prioritizedTasks
+                    if (prioritizedTasks
                             .stream()
-                            .anyMatch(oldSubtask -> isOverlayTasks(oldSubtask, subtask));
-                    if (isOverlay) {
-                        return -1; //Если подзадача накладывается на существующие, то не добавляем никуда
+                            .anyMatch(oldSubtask -> isOverlayTasks(oldSubtask, subtask))) {
+                        throw new ManagerTimeException("Наложение подзадач по времени");
                     }
                     prioritizedTasks.add(subtask);
                 }
@@ -221,7 +220,7 @@ public class InMemoryTaskManager implements TaskManager {
                 updateDurationAndStartTimeOfEpic(subtask.getEpicId());
                 return counterId;
             }
-            return -1;
+            throw new ManagerSaveException("Подзадача отсутствует");
         }
     } //добавление подзадачи
 
@@ -231,11 +230,10 @@ public class InMemoryTaskManager implements TaskManager {
                 epics.get(subtask.getEpicId()).getSubtaskIdS().contains(subtask.getId())) {
             //Проверка, что startTime указано, если нет, добавляем только в список subtasks
             if (subtask.getStartTime() != null) {
-                boolean isOverlay = prioritizedTasks
+                if (prioritizedTasks
                         .stream()
-                        .anyMatch(oldTask -> isOverlayTasks(oldTask, subtask));
-                if (isOverlay) {
-                    return; //Если подзадача накладывается на существующие, то не обновляем никуда
+                        .anyMatch(oldTask -> isOverlayTasks(oldTask, subtask))) {
+                    throw new ManagerTimeException("Наложение подзадач по времени");
                 }
                 prioritizedTasks.add(subtask);
             }
@@ -301,7 +299,7 @@ public class InMemoryTaskManager implements TaskManager {
     } // обновление статуса эпика
 
     // обновление полей duration и startTime эпика
-    private void updateDurationAndStartTimeOfEpic(int id) {
+    protected void updateDurationAndStartTimeOfEpic(int id) {
         final Epic savedEpic = epics.get(id);
         // создаем поток подзадач, хранящихся в эпике, убираем пустые с временем начала, сортируем
         final List<Subtask> arrayOfEpicsSubtask = subtasks.values().stream()
