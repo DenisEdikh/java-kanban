@@ -338,8 +338,8 @@ public class InMemoryTaskManager implements TaskManager {
     // метод по сравнению наложения по времени двух задач
     private boolean isOverlayTasks(Task task1, Task task2) {
         return task1.getStartTime().equals(task2.getStartTime())
-        || task1.getEndTime().equals(task2.getStartTime())
-        || task1.getStartTime().equals(task2.getEndTime())
+                || task1.getEndTime().equals(task2.getStartTime())
+                || task1.getStartTime().equals(task2.getEndTime())
                 || task1.getEndTime().equals(task2.getEndTime())
                 || task1.getStartTime().isAfter(task2.getStartTime())
                 && task1.getStartTime().isBefore(task2.getEndTime())
