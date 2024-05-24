@@ -5,7 +5,6 @@ import ru.yandex.practicum.javakanban.model.Subtask;
 import ru.yandex.practicum.javakanban.model.Task;
 
 import java.util.List;
-import java.util.Set;
 
 public interface TaskManager {
     List<Task> getAllTasks(); // получение списка всех задач
@@ -66,6 +65,6 @@ public interface TaskManager {
 
     List<Task> getHistory();
 
-    Set<Task> getPrioritizedTasks();
+    List<Task> getPrioritizedTasks();
 
 }
