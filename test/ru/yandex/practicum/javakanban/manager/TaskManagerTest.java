@@ -384,18 +384,44 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     void shouldNotAddTaskIfHaveOverlayByStartTime() {
         Task task2 = new Task("Task1",
                 "Task1 description",
-                LocalDateTime.of(2025, Month.MAY, 22, 16, 35),
-                10);
+                LocalDateTime.of(2025, Month.MAY, 22, 16, 40),
+                5);
         Task task3 = new Task("Task1",
                 "Task1 description",
-                LocalDateTime.of(2025, Month.MAY, 22, 17, 35),
+                LocalDateTime.of(2025, Month.MAY, 22, 16, 20),
                 10);
+        final int epicId = taskManager.addNewEpic(epic);
+        final Subtask subtask = new Subtask("subtask of epic",
+                "subtask description",
+                epicId,
+                LocalDateTime.of(2025, Month.MAY, 22, 16, 35),
+                10);
+        final Subtask subtask1 = new Subtask("subtask of epic",
+                "subtask description",
+                epicId,
+                LocalDateTime.of(2026, Month.MAY, 22, 17, 20),
+                200);
+        final Subtask subtask2 = new Subtask("subtask of epic",
+                "subtask description",
+                epicId,
+                LocalDateTime.of(2027, Month.MAY, 22, 16, 20),
+                20);
 
         final int taskId1 = taskManager.addNewTask(task1);
-        final int taskId3 = taskManager.addNewTask(task3);
+        final int subtaskId1 = taskManager.addNewSubtask(subtask1);
+        final int subtaskId2 = taskManager.addNewSubtask(subtask2);
 
-        assertTrue(taskManager.getAllTasks().contains(task3), "Задача не найдена");
+        assertTrue(taskManager.getAllTasks().contains(task1), "Задача не найдена");
+        assertTrue(taskManager.getAllSubtask().contains(subtask1), "Подзадача не найдена");
+        assertTrue(taskManager.getAllSubtask().contains(subtask2), "Подзадача не найдена");
         assertThrows(ManagerTimeException.class, () -> taskManager.addNewTask(task2), "Задача найдена");
+        assertThrows(ManagerTimeException.class, () -> taskManager.addNewTask(task3), "Задача найдена");
+        assertThrows(ManagerTimeException.class, () -> taskManager.addNewSubtask(subtask), "Задача найдена");
+        assertEquals(220, epic.getDuration().toMinutes(), "Неверная длительность");
+        assertEquals(LocalDateTime.of(2026, Month.MAY, 22, 17, 20),
+                epic.getStartTime(), "Неверное время начала эпика");
+        assertEquals(LocalDateTime.of(2027, Month.MAY, 22, 16, 40),
+                epic.getEndTime(), "Неверное время окончания эпика");
     }
 
     @Test
