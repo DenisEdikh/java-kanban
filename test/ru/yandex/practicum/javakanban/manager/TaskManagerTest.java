@@ -4,11 +4,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import ru.yandex.practicum.javakanban.exception.ManagerTimeException;
+import ru.yandex.practicum.javakanban.exception.TaskNotFoundException;
 import ru.yandex.practicum.javakanban.model.Epic;
 import ru.yandex.practicum.javakanban.model.Status;
 import ru.yandex.practicum.javakanban.model.Subtask;
 import ru.yandex.practicum.javakanban.model.Task;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
@@ -28,11 +31,11 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @BeforeEach
     void beforeEach() {
-        task = new Task("Task", "Task description", null, 10);
+        task = new Task("Task", "Task description", null, Duration.ofMinutes(10));
         task1 = new Task("Task1",
                 "Task1 description",
                 LocalDateTime.of(2025, Month.MAY, 22, 16, 30),
-                10);
+                Duration.ofMinutes(10));
         epic = new Epic("epic", "epic description");
         epic1 = new Epic("Epic1", "Epic1 description");
     }
@@ -59,9 +62,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Task newTask = new Task("newTask",
                 "newTask description",
                 Status.DONE,
-                taskId,
                 LocalDateTime.of(2025, Month.MAY, 22, 16, 45),
-                10);
+                Duration.ofMinutes(10),
+                taskId);
+
 
         taskManager.updateTask(newTask);
 
@@ -88,7 +92,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
         assertEquals(1, sizeOfTasks, "Неверное кол-во задач");
         assertFalse(savedTask, "Задача найдена");
-        assertThrows(ManagerSaveException.class, () -> taskManager.getTaskById(taskId), "Задача найдена");
+        assertThrows(TaskNotFoundException.class, () -> taskManager.getTaskById(taskId), "Задача найдена");
     }
 
     @Test
@@ -114,9 +118,9 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
         Subtask subtask = new Subtask("subtask of epic",
                 "subtask description",
-                epicId,
                 LocalDateTime.of(2024, Month.MAY, 22, 16, 32),
-                7);
+                Duration.ofMinutes(7),
+                epicId);
 
         final int subtaskId = taskManager.addNewSubtask(subtask);
         final Subtask savedSubtask = taskManager.getSubtaskById(subtaskId);
@@ -139,19 +143,19 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         final int epicId = taskManager.addNewEpic(epic);
         Subtask subtask = new Subtask("subtask of epic",
                 "subtask description",
-                epicId,
                 LocalDateTime.of(2024, Month.MAY, 22, 16, 32),
-                7);
+                Duration.ofMinutes(7),
+                epicId);
         final int subtaskId = taskManager.addNewSubtask(subtask);
         Subtask newSubtask = new Subtask("subtask of epic",
                 "subtask of epic newDescription",
                 Status.IN_PROGRESS,
-                subtaskId,
-                epicId,
                 LocalDateTime.of(2025, Month.MAY, 22, 16, 32),
-                10);
+                Duration.ofMinutes(10),
+                epicId,
+                subtaskId);
 
-        taskManager.updateSubTask(newSubtask);
+        taskManager.updateSubtask(newSubtask);
         final Subtask savedNewSubtask = taskManager.getSubtaskById(subtaskId);
 
         assertNotNull(savedNewSubtask, "Подзадача не найдена");
@@ -170,14 +174,14 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         final int epicId = taskManager.addNewEpic(epic);
         Subtask subtask = new Subtask("subtask of epic",
                 "subtask description",
-                epicId,
                 LocalDateTime.of(2024, Month.MAY, 22, 16, 32),
-                7);
+                Duration.ofMinutes(7),
+                epicId);
         Subtask subtask1 = new Subtask("subtask1 of epic",
                 "subtask1 description",
-                epicId,
                 LocalDateTime.of(2025, Month.MAY, 22, 16, 32),
-                8);
+                Duration.ofMinutes(8),
+                epicId);
         final int subtaskId = taskManager.addNewSubtask(subtask);
         final int subtaskId1 = taskManager.addNewSubtask(subtask1);
 
@@ -193,7 +197,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(1, sizeOfSubtasks, "Неверное кол-во задач");
         assertFalse(savedSubtask, "Задача найдена");
         assertFalse(savedList, "Задача найдена");
-        assertThrows(ManagerSaveException.class, () -> taskManager.getSubtaskById(subtaskId), "Задача найдена");
+        assertThrows(TaskNotFoundException.class, () -> taskManager.getSubtaskById(subtaskId), "Задача найдена");
     }
 
     @Test
@@ -201,14 +205,14 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         final int epicId = taskManager.addNewEpic(epic);
         Subtask subtask = new Subtask("subtask of epic",
                 "subtask description",
-                epicId,
                 LocalDateTime.of(2024, Month.MAY, 22, 16, 32),
-                7);
+                Duration.ofMinutes(7),
+                epicId);
         Subtask subtask1 = new Subtask("subtask1 of epic",
                 "subtask1 description",
-                epicId,
                 LocalDateTime.of(2025, Month.MAY, 22, 16, 32),
-                8);
+                Duration.ofMinutes(8),
+                epicId);
 
         final int subtaskId = taskManager.addNewSubtask(subtask);
         final int subtaskId1 = taskManager.addNewSubtask(subtask1);
@@ -265,9 +269,9 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
         Subtask subtask = new Subtask("subtask of epic",
                 "subtask description",
-                epicId,
                 LocalDateTime.of(2024, Month.MAY, 22, 16, 32),
-                7);
+                Duration.ofMinutes(8),
+                epicId);
 
         final int subtaskId = taskManager.addNewSubtask(subtask);
 
@@ -284,7 +288,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(1, sizeOfEpics, "Неверное кол-во эпиков'");
         assertFalse(savedEpic, "Эпик найден в истории");
         assertFalse(savedSubtask, "Подзадача эпика найдена в истории");
-        assertThrows(ManagerSaveException.class, () -> taskManager.getEpicById(epicId), "Эпик найден");
+        assertThrows(TaskNotFoundException.class, () -> taskManager.getEpicById(epicId), "Эпик найден");
     }
 
     @Test
@@ -307,14 +311,14 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         final Epic savedEpic = taskManager.getEpicById(epicId);
         Subtask subtask = new Subtask("subtask of epic",
                 "subtask description",
-                epicId,
                 LocalDateTime.of(2024, Month.MAY, 22, 16, 32),
-                7);
+                Duration.ofMinutes(7),
+                epicId);
         Subtask subtask1 = new Subtask("subtask1 of epic",
                 "subtask1 description",
-                epicId,
                 LocalDateTime.of(2025, Month.MAY, 22, 16, 32),
-                8);
+                Duration.ofMinutes(8),
+                epicId);
 
         subtask.setStatus(status);
         subtask1.setStatus(status);
@@ -330,14 +334,14 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         final Epic savedEpic = taskManager.getEpicById(epicId);
         Subtask subtask = new Subtask("subtask of epic",
                 "subtask description",
-                epicId,
                 LocalDateTime.of(2024, Month.MAY, 22, 16, 32),
-                7);
+                Duration.ofMinutes(7),
+                epicId);
         Subtask subtask1 = new Subtask("subtask1 of epic",
                 "subtask1 description",
-                epicId,
                 LocalDateTime.of(2025, Month.MAY, 22, 16, 32),
-                8);
+                Duration.ofMinutes(8),
+                epicId);
         subtask.setStatus(Status.NEW);
         subtask1.setStatus(Status.DONE);
 
@@ -385,27 +389,27 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Task task2 = new Task("Task1",
                 "Task1 description",
                 LocalDateTime.of(2025, Month.MAY, 22, 16, 40),
-                5);
+                Duration.ofMinutes(5));
         Task task3 = new Task("Task1",
                 "Task1 description",
                 LocalDateTime.of(2025, Month.MAY, 22, 16, 20),
-                10);
+                Duration.ofMinutes(10));
         final int epicId = taskManager.addNewEpic(epic);
         final Subtask subtask = new Subtask("subtask of epic",
                 "subtask description",
-                epicId,
                 LocalDateTime.of(2025, Month.MAY, 22, 16, 35),
-                10);
+                Duration.ofMinutes(10),
+                epicId);
         final Subtask subtask1 = new Subtask("subtask of epic",
                 "subtask description",
-                epicId,
                 LocalDateTime.of(2026, Month.MAY, 22, 17, 20),
-                200);
+                Duration.ofMinutes(200),
+                epicId);
         final Subtask subtask2 = new Subtask("subtask of epic",
                 "subtask description",
-                epicId,
                 LocalDateTime.of(2027, Month.MAY, 22, 16, 20),
-                20);
+                Duration.ofMinutes(20),
+                epicId);
 
         final int taskId1 = taskManager.addNewTask(task1);
         final int subtaskId1 = taskManager.addNewSubtask(subtask1);
