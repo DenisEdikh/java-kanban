@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import ru.yandex.practicum.javakanban.manager.TaskManager;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class PrioritizedHandler extends BaseHttpHandler {
     private final TaskManager manager;
@@ -16,15 +17,13 @@ public class PrioritizedHandler extends BaseHttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         String path = exchange.getRequestURI().getPath();
 
-        switch (getMethodOfHttp(exchange)) {
-            case GET:
-                if (path.matches("/prioritized$")) {
-                    String response = gson.toJson(manager.getPrioritizedTasks());
-                    sendGoodRequest(exchange, response);
-                    break;
-                }
-            default:
-                sendMethodNotAllowed(exchange);
+        if (Objects.requireNonNull(getMethodOfHttp(exchange)) == MethodOfHttp.GET) {
+            if (path.matches("/prioritized$")) {
+                String response = gson.toJson(manager.getPrioritizedTasks());
+                sendGoodRequest(exchange, response);
+                return;
+            }
         }
+        sendMethodNotAllowed(exchange);
     }
 }
