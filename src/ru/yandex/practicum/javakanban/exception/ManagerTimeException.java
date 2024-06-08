@@ -1,4 +1,4 @@
-package ru.yandex.practicum.javakanban.manager;
+package ru.yandex.practicum.javakanban.exception;
 
 public class ManagerTimeException extends RuntimeException {
     public ManagerTimeException(String message) {
