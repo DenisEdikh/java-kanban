@@ -2,13 +2,14 @@ package ru.yandex.practicum.javakanban.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Epic extends Task {
-    protected ArrayList<Integer> subtaskIdS;
+    protected List<Integer> subtaskIdS;
     protected LocalDateTime endTime;
 
     public Epic(String title, String description) {
-        super(title, description, null, 0);
+        super(title, description);
         this.endTime = null;
         this.subtaskIdS = new ArrayList<>();
     } // конструктор создания эпиков
@@ -18,7 +19,7 @@ public class Epic extends Task {
         this.subtaskIdS = new ArrayList<>();
     } // конструктор обновления эпиков
 
-    public ArrayList<Integer> getSubtaskIdS() {
+    public List<Integer> getSubtaskIdS() {
         return subtaskIdS;
     }
 

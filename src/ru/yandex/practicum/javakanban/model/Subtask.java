@@ -1,5 +1,6 @@
 package ru.yandex.practicum.javakanban.model;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class Subtask extends Task {
@@ -8,9 +9,9 @@ public class Subtask extends Task {
     // Конструктор по созданию задачи
     public Subtask(String title,
                    String description,
-                   int epicId,
                    LocalDateTime startTime,
-                   long duration) {
+                   Duration duration,
+                   int epicId) {
         super(title, description, startTime, duration);
         this.epicId = epicId;
     }
@@ -18,11 +19,11 @@ public class Subtask extends Task {
     public Subtask(String title,
                    String description,
                    Status status,
-                   int id,
-                   int epicId,
                    LocalDateTime startTime,
-                   long duration) {
-        super(title, description, status, id, startTime, duration);
+                   Duration duration,
+                   int epicId,
+                   int id) {
+        super(title, description, status, startTime, duration, id);
         this.epicId = epicId;
     } // конструктор по обновлению подзадачи
 

@@ -12,30 +12,26 @@ public class Task {
     protected LocalDateTime startTime;
 
     // конструктор создания новой задачи
-    public Task(String title, String description, LocalDateTime startTime, long duration) {
+    public Task(String title, String description, LocalDateTime startTime, Duration duration) {
         this.title = title;
         this.description = description;
         this.status = Status.NEW;
         this.startTime = startTime;
-        this.duration = Duration.ofMinutes(duration);
+        this.duration = duration;
     }
 
     // конструктор для обновления задачи/подзадачи по верному id
 
-    public Task(String title, String description, Status status, int id, LocalDateTime startTime, long duration) {
-        this.title = title;
-        this.description = description;
-        this.id = id;
+    public Task(String title, String description, Status status, LocalDateTime startTime, Duration duration, int id) {
+        this(title, description, startTime, duration);
         this.status = status;
-        this.startTime = startTime;
-        this.duration = Duration.ofMinutes(duration);
+        this.id = id;
     }
 
     // конструктор только для создания эпиков (отдельно для создания задачи не используется)
     protected Task(String title, String description) {
         this.title = title;
         this.description = description;
-        this.status = Status.NEW;
     }
 
     // конструктор только для обновления эпиков
@@ -85,8 +81,8 @@ public class Task {
         return duration;
     }
 
-    public void setDuration(long duration) {
-        this.duration = Duration.ofMinutes(duration);
+    public void setDuration(Duration duration) {
+        this.duration = duration;
     }
 
     public LocalDateTime getStartTime() {

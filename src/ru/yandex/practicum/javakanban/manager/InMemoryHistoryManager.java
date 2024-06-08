@@ -52,9 +52,9 @@ public class InMemoryHistoryManager implements HistoryManager {
         return tail;
     }
 
-    ArrayList<Task> getTasks() { // Метод предоставления задач в виде списка
+    private List<Task> getTasks() { // Метод предоставления задач в виде списка
         final Node oldHead = head;
-        final ArrayList<Task> tasks = new ArrayList<>();
+        final List<Task> tasks = new ArrayList<>();
 
         for (Node i = oldHead; i != null; i = i.next) {
             tasks.add(i.task);
@@ -104,5 +104,4 @@ public class InMemoryHistoryManager implements HistoryManager {
             history.remove(id);
         }
     }
-
 }
