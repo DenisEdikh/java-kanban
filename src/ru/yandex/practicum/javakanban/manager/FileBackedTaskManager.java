@@ -1,6 +1,7 @@
 package ru.yandex.practicum.javakanban.manager;
 
 
+import ru.yandex.practicum.javakanban.exception.ManagerSaveException;
 import ru.yandex.practicum.javakanban.model.*;
 
 import java.io.File;
@@ -8,8 +9,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,6 +106,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String description = " ";
         String numberOfEpic = " ";
         String startTime = " ";
+        String duration = " ";
 
         if (task.getTitle() != null) {
             title = task.getTitle();
@@ -119,6 +121,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         if (task.getStartTime() != null) {
             startTime = String.valueOf(task.getStartTime());
         }
+        if (task.getDuration() != null) {
+            duration = String.valueOf(task.getDuration());
+        }
+
         // Собираем стрингу
         return String.join(",",
                 String.valueOf(task.getId()),
@@ -128,7 +134,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 description,
                 numberOfEpic,
                 startTime,
-                String.valueOf(task.getDuration().toMinutes())
+                duration
         );
     }
 
@@ -142,6 +148,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         final Status status = Status.valueOf(str[3]);
         final String description;
         final LocalDateTime startTime;
+        final Duration duration;
 
         if ((" ").equals(str[2])) {
             title = null;
@@ -158,12 +165,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         } else {
             startTime = LocalDateTime.parse(str[6]);
         }
-
-        final long duration = Integer.parseInt(str[7]);
+        if ((" ").equals(str[7])) {
+            duration = null;
+        } else {
+            duration = Duration.parse(str[7]);
+        }
 
         // В зависимости от типа задачи инициализируем соответственно
         if (TypeOfTask.TASK.equals(type)) {
-            return new Task(title, description, status, id, startTime, duration);
+            return new Task(title, description, status, startTime, duration, id);
         } else if (TypeOfTask.EPIC.equals(type)) {
             Epic epic = new Epic(title, description, id);
             epic.setStatus(status);
@@ -171,7 +181,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             epic.setStartTime(startTime);
             return epic;
         } else {
-            return new Subtask(title, description, status, id, Integer.parseInt(str[5]), startTime, duration);
+            return new Subtask(title, description, status, startTime, duration, Integer.parseInt(str[5]), id);
         }
     }
 
@@ -239,8 +249,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateSubTask(Subtask subtask) {
-        super.updateSubTask(subtask);
+    public void updateSubtask(Subtask subtask) {
+        super.updateSubtask(subtask);
         save();
     }
 
@@ -248,36 +258,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public void removeSubtaskById(int id) {
         super.removeSubtaskById(id);
         save();
-    }
-
-    public static void main(String[] args) {
-
-        TaskManager fileBackedTaskManager =
-                new FileBackedTaskManager(Path.of("src/ru/yandex/practicum/javakanban/resourses/memory-file.csv"));
-
-        int idT1 = fileBackedTaskManager.addNewTask(new Task("T1", null, null, 10));
-        int idT2 = fileBackedTaskManager.addNewTask(new Task("T2", "t2", LocalDateTime.of(2025, Month.MAY, 22, 16, 30), 10));
-        int idE1 = fileBackedTaskManager.addNewEpic(new Epic("E1", "e1"));
-        int idS1 = fileBackedTaskManager.addNewSubtask(new Subtask("S1", "s1", idE1, null, 10));
-        int idS2 = fileBackedTaskManager.addNewSubtask(new Subtask("S2", "s2", idE1, LocalDateTime.of(2024, Month.MAY, 22, 16, 32), 7));
-        int idS3 = fileBackedTaskManager.addNewSubtask(new Subtask("S3", "s3", idE1, LocalDateTime.of(2024, Month.MAY, 22, 16, 40), 2));
-        int idE2 = fileBackedTaskManager.addNewEpic(new Epic("E2", "e2"));
-
-        List<Task> taskList = fileBackedTaskManager.getAllTasks();
-        List<Epic> epicList = fileBackedTaskManager.getAllEpics();
-        List<Subtask> subtaskList = fileBackedTaskManager.getAllSubtask();
-
-        TaskManager fileBackedTaskManager1 = FileBackedTaskManager.loadFromFile(
-                Path.of("src/ru/yandex/practicum/javakanban/resourses/memory-file.csv").toFile());
-
-        List<Task> taskList1 = fileBackedTaskManager1.getAllTasks();
-        List<Epic> epicList1 = fileBackedTaskManager1.getAllEpics();
-        List<Subtask> subtaskList1 = fileBackedTaskManager1.getAllSubtask();
-
-        System.out.println(taskList1.containsAll(taskList) &&
-                epicList1.containsAll(epicList) &&
-                subtaskList1.containsAll(subtaskList));
-
     }
 }
 
