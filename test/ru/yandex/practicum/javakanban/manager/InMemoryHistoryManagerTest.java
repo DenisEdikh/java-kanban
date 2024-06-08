@@ -3,6 +3,7 @@ package ru.yandex.practicum.javakanban.manager;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.javakanban.model.Task;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
@@ -17,7 +18,7 @@ public class InMemoryHistoryManagerTest {
         Task task = new Task("Task",
                 "Task description",
                 null,
-                10);
+                Duration.ofMinutes(10));
         task.setId(1);
         historyManager.addTaskToHistory(task);
         historyManager.remove(task.getId());
@@ -30,12 +31,12 @@ public class InMemoryHistoryManagerTest {
         Task task = new Task("Task",
                 "Task description",
                 null,
-                10);
+                Duration.ofMinutes(10));
         task.setId(1);
         Task task1 = new Task("Task1",
                 "Task1 description",
                 LocalDateTime.of(2025, Month.MAY, 22, 16, 30),
-                10);
+                Duration.ofMinutes(10));
         task1.setId(2);
 
         historyManager.addTaskToHistory(task1);
@@ -66,11 +67,11 @@ public class InMemoryHistoryManagerTest {
         Task task = new Task("Task",
                 "Task description",
                 null,
-                10);
+                Duration.ofMinutes(10));
         Task task1 = new Task("Task1",
                 "Task1 description",
                 LocalDateTime.of(2025, Month.MAY, 22, 16, 30),
-                10);
+                Duration.ofMinutes(10));
 
         historyManager.linkLast(task);
         assertNotNull(historyManager.getHead(), "Некорректная ссылка");
@@ -90,17 +91,17 @@ public class InMemoryHistoryManagerTest {
         Task task = new Task("Task",
                 "Task description",
                 null,
-                10);
+                Duration.ofMinutes(10));
         task.setId(1);
         Task task1 = new Task("Task1",
                 "Task1 description",
                 LocalDateTime.of(2025, Month.MAY, 22, 16, 30),
-                10);
+                Duration.ofMinutes(10));
         task1.setId(2);
         Task task2 = new Task("Task2",
                 "Task2 description",
                 LocalDateTime.of(2023, Month.MAY, 22, 16, 30),
-                10);
+                Duration.ofMinutes(10));
         task2.setId(3);
 
         historyManager.addTaskToHistory(task1);
