@@ -58,7 +58,7 @@ public interface TaskManager {
     int addNewSubtask(Subtask subtask); //добавление подзадачи
 
 
-    void updateSubTask(Subtask subtask); //обновление подзадачи
+    void updateSubtask(Subtask subtask); //обновление подзадачи
 
 
     void removeSubtaskById(int id); // удаление подзадачи по идентификатору
@@ -66,5 +66,4 @@ public interface TaskManager {
     List<Task> getHistory();
 
     List<Task> getPrioritizedTasks();
-
 }
