@@ -2,15 +2,16 @@ package ru.yandex.practicum.javakanban.server;
 
 import com.google.gson.JsonObject;
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-public class BaseHttpHandler {
+public abstract class BaseHttpHandler implements HttpHandler {
 
     // Проверка наличия основных полей, когда прилетает задача от клиента
-    protected boolean checkJson(JsonObject jo) throws IOException {
+    protected boolean checkJson(JsonObject jo) {
         return jo.has("title")
                 && jo.has("description")
                 && jo.has("status")
