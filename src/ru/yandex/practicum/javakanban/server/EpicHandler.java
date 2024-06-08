@@ -1,28 +1,23 @@
 package ru.yandex.practicum.javakanban.server;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import ru.yandex.practicum.javakanban.exception.CreateJsonException;
 import ru.yandex.practicum.javakanban.exception.ManagerSaveException;
 import ru.yandex.practicum.javakanban.exception.ManagerTimeException;
 import ru.yandex.practicum.javakanban.exception.TaskNotFoundException;
-import ru.yandex.practicum.javakanban.manager.Managers;
 import ru.yandex.practicum.javakanban.manager.TaskManager;
 import ru.yandex.practicum.javakanban.model.Epic;
 
 import java.io.IOException;
 import java.util.Optional;
 
-public class EpicHandler extends BaseHttpHandler implements HttpHandler {
+public class EpicHandler extends BaseHttpHandler {
     private final TaskManager manager;
-    private final Gson gson;
 
     public EpicHandler(TaskManager manager) {
         this.manager = manager;
-        this.gson = Managers.getGson();
     }
 
     @Override
@@ -113,8 +108,6 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
             throw new CreateJsonException("JSON некорректен");
         }
     }
-
-//    TypeToken<ArrayList<Integer>>
 }
 
 

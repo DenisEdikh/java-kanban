@@ -1,28 +1,23 @@
 package ru.yandex.practicum.javakanban.server;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import ru.yandex.practicum.javakanban.exception.CreateJsonException;
 import ru.yandex.practicum.javakanban.exception.ManagerSaveException;
 import ru.yandex.practicum.javakanban.exception.ManagerTimeException;
 import ru.yandex.practicum.javakanban.exception.TaskNotFoundException;
-import ru.yandex.practicum.javakanban.manager.Managers;
 import ru.yandex.practicum.javakanban.manager.TaskManager;
 import ru.yandex.practicum.javakanban.model.Task;
 
 import java.io.IOException;
 import java.util.Optional;
 
-public class TaskHandler extends BaseHttpHandler implements HttpHandler {
+public class TaskHandler extends BaseHttpHandler {
     private final TaskManager manager;
-    private final Gson gson;
 
     public TaskHandler(TaskManager manager) {
         this.manager = manager;
-        this.gson = Managers.getGson();
     }
 
     @Override
