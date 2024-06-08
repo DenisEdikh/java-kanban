@@ -10,14 +10,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
     @Override
     public void write(JsonWriter out, LocalDateTime localDateTime) throws IOException {
         if (localDateTime == null) {
             out.nullValue();
         } else {
-            out.value(localDateTime.format(DATE_TIME_FORMATTER));
+            out.value(localDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         }
     }
 
@@ -27,7 +26,7 @@ public class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
                 in.nextNull();
                 return null;
             } else {
-                return LocalDateTime.parse(in.nextString(), DATE_TIME_FORMATTER);
+                return LocalDateTime.parse(in.nextString(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             }
     }
 }
