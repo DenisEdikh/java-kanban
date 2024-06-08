@@ -1,6 +1,7 @@
 package ru.yandex.practicum.javakanban.manager;
 
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.javakanban.exception.ManagerSaveException;
 import ru.yandex.practicum.javakanban.model.Epic;
 import ru.yandex.practicum.javakanban.model.Subtask;
 import ru.yandex.practicum.javakanban.model.Task;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
@@ -27,9 +29,9 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
 
     @Test
     void testException() {
-        assertThrows(ManagerSaveException.class, () -> {
-            FileBackedTaskManager.loadFromFile(Path.of("memory-file.csv").toFile());
-        }, "Файл отсутствует!");
+        assertThrows(ManagerSaveException.class, () ->
+                FileBackedTaskManager.loadFromFile(Path.of("memory-file.csv").toFile()),
+                "Файл отсутствует!");
     }
 
     @Test
@@ -57,9 +59,9 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         final int epicId = fileBackedTaskManager.addNewEpic(epic);
         final Subtask subtask = new Subtask("subtask of epic",
                 "subtask description",
-                epicId,
                 LocalDateTime.of(2024, Month.MAY, 20, 16, 32),
-                7);
+                Duration.ofMinutes(7),
+                epicId);
         final int subtaskId1 = fileBackedTaskManager.addNewSubtask(subtask);
         final List<Task> prioritizedList = fileBackedTaskManager.getPrioritizedTasks();
 
