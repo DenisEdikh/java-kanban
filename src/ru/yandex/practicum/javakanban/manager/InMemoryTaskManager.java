@@ -1,10 +1,13 @@
 package ru.yandex.practicum.javakanban.manager;
 
+import ru.yandex.practicum.javakanban.exception.ManagerTimeException;
+import ru.yandex.practicum.javakanban.exception.TaskNotFoundException;
 import ru.yandex.practicum.javakanban.model.Epic;
 import ru.yandex.practicum.javakanban.model.Status;
 import ru.yandex.practicum.javakanban.model.Subtask;
 import ru.yandex.practicum.javakanban.model.Task;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -18,8 +21,8 @@ public class InMemoryTaskManager implements TaskManager {
     protected final Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
 
     @Override
-    public ArrayList<Task> getAllTasks() {
-        return new ArrayList<>(tasks.values());
+    public List<Task> getAllTasks() {
+        return List.copyOf(tasks.values());
     } // получение списка всех задач
 
     @Override
@@ -37,7 +40,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(int id) {
         final Optional<Task> optionalTask = Optional.ofNullable(tasks.get(id));
-        final Task task = optionalTask.orElseThrow(() -> new ManagerSaveException("Задача отсутствует"));
+        final Task task = optionalTask.orElseThrow(() -> new TaskNotFoundException("Задача отсутствует"));
         historyManager.addTaskToHistory(task);
         return task;
     } // получение задачи по идентификатору
@@ -45,7 +48,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public int addNewTask(Task task) {
         if (task == null) {
-            throw new ManagerSaveException("Задача отсутствует");
+            throw new TaskNotFoundException("Задача отсутствует");
         } else {
             if (task.getStartTime() != null) { //Проверка, что startTime указано, если нет, добавляем только в список tasks
                 //Если задача накладывается на существующие, то не добавляем никуда
@@ -79,6 +82,8 @@ public class InMemoryTaskManager implements TaskManager {
                 prioritizedTasks.add(task);
             }
             tasks.put(task.getId(), task);
+        } else {
+            throw new TaskNotFoundException("Задача отсутствует");
         }
     } //обновление задачи
 
@@ -90,12 +95,14 @@ public class InMemoryTaskManager implements TaskManager {
             }
             tasks.remove(id);
             historyManager.remove(id);
+        } else {
+            throw new TaskNotFoundException("Задача отсутствует");
         }
     } //удаление по идентификатору
 
     @Override
     public List<Epic> getAllEpics() {
-        return new ArrayList<>(epics.values());
+        return List.copyOf(epics.values());
     } // получение списка всех эпиков
 
     @Override
@@ -120,7 +127,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpicById(int id) {
         final Optional<Epic> optionalEpic = Optional.ofNullable(epics.get(id));
-        final Epic epic = optionalEpic.orElseThrow(() -> new ManagerSaveException("Эпик отсутствует"));
+        final Epic epic = optionalEpic.orElseThrow(() -> new TaskNotFoundException("Эпик отсутствует"));
         historyManager.addTaskToHistory(epic);
         return epic;
     } // получение эпика по идентификатору
@@ -128,10 +135,11 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public int addNewEpic(Epic epic) {
         if (epic == null) {
-            throw new ManagerSaveException("Эпик отсутствует");
+            throw new TaskNotFoundException("Эпик отсутствует");
         } else {
             epic.setId(++counterId);
             epics.put(counterId, epic);
+            updateStatusOfEpic(counterId);
             return counterId;
         }
     } //добавление нового эпика
@@ -142,6 +150,8 @@ public class InMemoryTaskManager implements TaskManager {
             final Epic savedEpic = epics.get(epic.getId());
             savedEpic.setTitle(epic.getTitle());
             savedEpic.setDescription(epic.getDescription());
+        } else {
+            throw new TaskNotFoundException("Эпик отсутствует");
         }
     } // обновление эпика
 
@@ -155,21 +165,27 @@ public class InMemoryTaskManager implements TaskManager {
                     });
             epics.remove(id);
             historyManager.remove(id);
+        } else {
+            throw new TaskNotFoundException("Эпик отсутствует");
         }
     } // удаление эпика по идентификатору
 
     @Override
     public List<Subtask> getEpicSubtasks(int epicId) {
-        return epics.get(epicId)
-                .getSubtaskIdS()
-                .stream()
-                .map(subtasks::get)
-                .toList();
+        if (epics.containsKey(epicId)) {
+            return epics.get(epicId)
+                    .getSubtaskIdS()
+                    .stream()
+                    .map(subtasks::get)
+                    .toList();
+        } else {
+            throw new TaskNotFoundException("Эпик отсутствует");
+        }
     } //получение списка подзадач определенного эпика
 
     @Override
     public List<Subtask> getAllSubtask() {
-        return new ArrayList<>(subtasks.values());
+        return List.copyOf(subtasks.values());
     } // получение списка всех подзадач
 
     @Override
@@ -198,7 +214,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubtaskById(int id) {
         final Optional<Subtask> optionalSubtask = Optional.ofNullable(subtasks.get(id));
-        final Subtask subtask = optionalSubtask.orElseThrow(() -> new ManagerSaveException("Подзадача отсутствует"));
+        final Subtask subtask = optionalSubtask.orElseThrow(() -> new TaskNotFoundException("Подзадача отсутствует"));
         historyManager.addTaskToHistory(subtask);
         return subtask;
     } // получение подзадачи по идентификатору
@@ -206,7 +222,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public int addNewSubtask(Subtask subtask) {
         if (subtask == null) {
-            throw new ManagerSaveException("Подзадача отсутствует");
+            throw new TaskNotFoundException("Подзадача отсутствует");
         } else {
             if (epics.containsKey(subtask.getEpicId())) {
                 //Проверка, что startTime указано, если нет, добавляем только в список subtasks
@@ -226,12 +242,12 @@ public class InMemoryTaskManager implements TaskManager {
                 updateDurationAndStartTimeOfEpic(subtask.getEpicId());
                 return counterId;
             }
-            throw new ManagerSaveException("Подзадача отсутствует");
+            throw new TaskNotFoundException("Эпик отсутствует");
         }
     } //добавление подзадачи
 
     @Override
-    public void updateSubTask(Subtask subtask) {
+    public void updateSubtask(Subtask subtask) {
         if (epics.containsKey(subtask.getEpicId()) &
                 epics.get(subtask.getEpicId()).getSubtaskIdS().contains(subtask.getId())) {
             //Проверка, что startTime указано, если нет, добавляем только в список subtasks
@@ -249,6 +265,8 @@ public class InMemoryTaskManager implements TaskManager {
             updateStatusOfEpic(subtask.getEpicId());
             //обновление длительности и времени начала/завершения эпика
             updateDurationAndStartTimeOfEpic(subtask.getEpicId());
+        } else {
+            throw new TaskNotFoundException("Подзадача отсутствует");
         }
     } //обновление подзадачи
 
@@ -268,6 +286,8 @@ public class InMemoryTaskManager implements TaskManager {
             updateStatusOfEpic(tempEpicId);
             //обновление длительности и времени начала/завершения эпика
             updateDurationAndStartTimeOfEpic(tempEpicId);
+        } else {
+            throw new TaskNotFoundException("Подзадача отсутствует");
         }
     } // удаление подзадачи по идентификатору
 
@@ -278,7 +298,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getPrioritizedTasks() {
-        return new ArrayList<>(prioritizedTasks);
+        return List.copyOf(prioritizedTasks);
     }
 
     private void updateStatusOfEpic(int id) {
@@ -290,9 +310,9 @@ public class InMemoryTaskManager implements TaskManager {
             int counterDone = 0;
 
             for (Integer i : tempEpic.getSubtaskIdS()) {
-                if (subtasks.get(i).getStatus().equals(Status.NEW)) {
+                if (Status.NEW.equals(subtasks.get(i).getStatus())) {
                     counterNew++;
-                } else if (subtasks.get(i).getStatus().equals(Status.DONE)) {
+                } else if (Status.DONE.equals(subtasks.get(i).getStatus())) {
                     counterDone++;
                 }
             }
@@ -312,26 +332,24 @@ public class InMemoryTaskManager implements TaskManager {
         // создаем поток подзадач, хранящихся в эпике, убираем пустые с временем начала, сортируем
         final List<Subtask> arrayOfEpicsSubtask = subtasks.values().stream()
                 .filter(subtask -> subtask.getEpicId() == savedEpic.getId() && subtask.getStartTime() != null)
-                .map(Optional::ofNullable)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
                 .sorted(Comparator.comparing(Subtask::getStartTime))
                 .toList();
 
         if (!arrayOfEpicsSubtask.isEmpty()) { //Проверка, что список из подзадач не пустой
             final LocalDateTime startTimeOfEpic = arrayOfEpicsSubtask.getFirst().getStartTime();
             final LocalDateTime endTimeOfEpic = arrayOfEpicsSubtask.getLast().getEndTime();
+            final Duration duration = arrayOfEpicsSubtask.stream()
+                    .map(Subtask::getDuration)
+                    .filter(Objects::nonNull)
+                    .reduce(Duration.ZERO, Duration::plus);
 
             savedEpic.setStartTime(startTimeOfEpic);
             savedEpic.setEndTime(endTimeOfEpic);
-            final long duration = arrayOfEpicsSubtask.stream()
-                    .mapToLong(subtask -> subtask.getDuration().toMinutes())
-                    .sum();
             savedEpic.setDuration(duration);
         } else {
             savedEpic.setStartTime(null);
             savedEpic.setEndTime(null);
-            savedEpic.setDuration(0);
+            savedEpic.setDuration(null);
         }
     }
 
