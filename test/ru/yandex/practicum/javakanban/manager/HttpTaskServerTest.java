@@ -1,11 +1,11 @@
 package ru.yandex.practicum.javakanban.manager;
 
-import com.google.gson.Gson;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.javakanban.model.Status;
 import ru.yandex.practicum.javakanban.model.Task;
+import ru.yandex.practicum.javakanban.server.BaseHttpHandler;
 import ru.yandex.practicum.javakanban.server.HttpTaskServer;
 
 import java.io.IOException;
@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class HttpTaskServerTest {
     TaskManager manager = new InMemoryTaskManager();
     HttpTaskServer server = new HttpTaskServer(manager);
-    Gson gson = Managers.getGson();
     HttpClient client = HttpClient.newHttpClient();
 
     public HttpTaskServerTest() throws IOException {
@@ -50,7 +49,7 @@ public class HttpTaskServerTest {
                 LocalDateTime.of(2024, Month.JUNE, 8, 12, 0),
                 Duration.ofMinutes(10));
 
-        String jsonTask1 = gson.toJson(task1);
+        String jsonTask1 = BaseHttpHandler.gson.toJson(task1);
 
         URI url = URI.create("http://localhost:8080/tasks");
         HttpRequest request = HttpRequest
@@ -84,7 +83,7 @@ public class HttpTaskServerTest {
                 Duration.ofMinutes(100),
                 1);
 
-        String jsonTask1 = gson.toJson(task1);
+        String jsonTask1 = BaseHttpHandler.gson.toJson(task1);
 
         URI url = URI.create("http://localhost:8080/tasks");
         HttpRequest request = HttpRequest
@@ -157,7 +156,7 @@ public class HttpTaskServerTest {
 
         assertEquals(200, response.statusCode(), "Неверный код ответа");
 
-        Task taskNew = gson.fromJson(response.body(), Task.class);
+        Task taskNew = BaseHttpHandler.gson.fromJson(response.body(), Task.class);
 
         assertNotNull(taskNew, "Задачи не найдены");
         assertEquals(task1.getTitle(), taskNew.getTitle(), "Задачи не совпадают");

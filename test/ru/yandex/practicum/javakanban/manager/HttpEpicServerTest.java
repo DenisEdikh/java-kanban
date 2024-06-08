@@ -1,10 +1,10 @@
 package ru.yandex.practicum.javakanban.manager;
 
-import com.google.gson.Gson;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.javakanban.model.Epic;
+import ru.yandex.practicum.javakanban.server.BaseHttpHandler;
 import ru.yandex.practicum.javakanban.server.HttpTaskServer;
 
 import java.io.IOException;
@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class HttpEpicServerTest {
     TaskManager manager = new InMemoryTaskManager();
     HttpTaskServer server = new HttpTaskServer(manager);
-    Gson gson = Managers.getGson();
     HttpClient client = HttpClient.newHttpClient();
 
     public HttpEpicServerTest() throws IOException {
@@ -43,7 +42,7 @@ public class HttpEpicServerTest {
     public void shouldAdd1Epic() throws IOException, InterruptedException {
         Epic epic = new Epic("Epic", "Epic description");
 
-        String jsonEpic = gson.toJson(epic);
+        String jsonEpic = BaseHttpHandler.gson.toJson(epic);
 
         URI url = URI.create("http://localhost:8080/epics");
         HttpRequest requestGet = HttpRequest
@@ -72,7 +71,7 @@ public class HttpEpicServerTest {
                 epicId);
 
 
-        String jsonTask1 = gson.toJson(epicNew);
+        String jsonTask1 = BaseHttpHandler.gson.toJson(epicNew);
 
         URI url = URI.create("http://localhost:8080/epics");
         HttpRequest request = HttpRequest
@@ -131,7 +130,7 @@ public class HttpEpicServerTest {
 
         assertEquals(200, response.statusCode(), "Неверный код ответа");
 
-        Epic epicNew = gson.fromJson(response.body(), Epic.class);
+        Epic epicNew = BaseHttpHandler.gson.fromJson(response.body(), Epic.class);
 
         assertNotNull(epicNew, "Подзадачи не найдены");
         assertEquals(epic.getTitle(), epicNew.getTitle(), "Подзадачи не совпадают");

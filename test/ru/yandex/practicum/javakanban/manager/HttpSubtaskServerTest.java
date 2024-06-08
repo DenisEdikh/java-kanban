@@ -1,12 +1,12 @@
 package ru.yandex.practicum.javakanban.manager;
 
-import com.google.gson.Gson;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.javakanban.model.Epic;
 import ru.yandex.practicum.javakanban.model.Status;
 import ru.yandex.practicum.javakanban.model.Subtask;
+import ru.yandex.practicum.javakanban.server.BaseHttpHandler;
 import ru.yandex.practicum.javakanban.server.HttpTaskServer;
 
 import java.io.IOException;
@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class HttpSubtaskServerTest {
     TaskManager manager = new InMemoryTaskManager();
     HttpTaskServer server = new HttpTaskServer(manager);
-    Gson gson = Managers.getGson();
     HttpClient client = HttpClient.newHttpClient();
 
     public HttpSubtaskServerTest() throws IOException {
@@ -52,7 +51,7 @@ public class HttpSubtaskServerTest {
                 Duration.ofMinutes(10),
                 1);
 
-        String jsonSubtask1 = gson.toJson(subtask1);
+        String jsonSubtask1 = BaseHttpHandler.gson.toJson(subtask1);
 
         URI url = URI.create("http://localhost:8080/subtasks");
         HttpRequest request = HttpRequest
@@ -79,7 +78,7 @@ public class HttpSubtaskServerTest {
                 Duration.ofMinutes(10),
                 epicId);
 
-        String jsonSubtask1 = gson.toJson(subtask1);
+        String jsonSubtask1 = BaseHttpHandler.gson.toJson(subtask1);
 
         URI url = URI.create("http://localhost:8080/subtasks");
         HttpRequest request = HttpRequest
@@ -120,7 +119,7 @@ public class HttpSubtaskServerTest {
                 subtaskId);
 
 
-        String jsonTask1 = gson.toJson(subtask1);
+        String jsonTask1 = BaseHttpHandler.gson.toJson(subtask1);
 
         URI url = URI.create("http://localhost:8080/subtasks");
         HttpRequest request = HttpRequest
@@ -199,7 +198,7 @@ public class HttpSubtaskServerTest {
 
         assertEquals(200, response.statusCode(), "Неверный код ответа");
 
-        Subtask subtaskNew = gson.fromJson(response.body(), Subtask.class);
+        Subtask subtaskNew = BaseHttpHandler.gson.fromJson(response.body(), Subtask.class);
 
         assertNotNull(subtaskNew, "Подзадачи не найдены");
         assertEquals(subtask1.getTitle(), subtaskNew.getTitle(), "Подзадачи не совпадают");
